@@ -10,7 +10,7 @@
 
 ### 1. Туристические маршруты
 <img src="./src/assets/md/mapmIni.png" alt="Пример маршрута на карте" width="400" height="700"/>  
-<img src="./src/assets/md/mapBig.png" alt="Пример маршрута на карте" width="1200" height="650"/>  
+<img src="./src/assets/md/mapBig.png" alt="Пример маршрута на карте" width="1200" height="600"/>  
 
 **Описание:**  
 - Построение кастомных маршрутов на основе туров.
@@ -20,7 +20,7 @@
 ---
 
 ### 2. Парковки
-<img src="./src/assets/md/parking.png" alt="Карта парковок с полигонами" width="1200" height="650"/> 
+<img src="./src/assets/md/parking.png" alt="Карта парковок с полигонами" width="1200" height="600"/> 
 
 **Описание:**  
 - Карты с зонами парковки, обозначенными зелёными полигонами.
@@ -39,7 +39,7 @@
 ---
 
 ### 4. Конструктор парковок
-<img src="./src/assets/md/parking.png" alt="Интерфейс конструктора парковок" width="1200" height="650"/>  
+<img src="./src/assets/md/parking.png" alt="Интерфейс конструктора парковок" width="1200" height="600"/>  
 
 **Описание:**  
 - Полностью интерактивный инструмент для добавления новых зон парковки.
@@ -49,7 +49,7 @@
 ---
 
 ### 5. Регистрация и авторизация
-<img src="./src/assets/md/login.png" alt="Логин" width="1200" height="650"/>  
+<img src="./src/assets/md/login.png" alt="Логин" width="1200" height="600"/>  
 <img src="./src/assets/md/registerMini.png" alt="Логин" width="320" height="650"/> 
 
 Для использования функционала приложения предусмотрены следующие возможности регистрации и логина:
@@ -82,10 +82,10 @@
 Здесь представлены фотографии и скриншоты, иллюстрирующие функционал и дизайн нашего проекта.
 
 ### Боковое меню / навигация
-<img src="./src/assets/md/sidebar.png" alt="сайдбар" width="400" height="650"/>
+<img src="./src/assets/md/sidebar.png" alt="сайдбар" width="400" height="600"/>
 
 ### Главное меню
-<img src="./src/assets/md/main.png" alt="главное меню" width="1200" height="650"/>
+<img src="./src/assets/md/main.png" alt="главное меню" width="1200" height="600"/>
 
 ### Страница привествия /welcome
 <img src="./src/assets/md/welcome.png" alt="главное меню" width="320" height="650"/>
