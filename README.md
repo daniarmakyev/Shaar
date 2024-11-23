@@ -10,7 +10,7 @@
 
 ### 1. Туристические маршруты
 <img src="./src/assets/md/mapmIni.png" alt="Пример маршрута на карте" width="400" height="700"/>  
-<img src="./src/assets/md/mapBig.png" alt="Пример маршрута на карте" width="1200" height="500"/>  
+<img src="./src/assets/md/mapBig.png" alt="Пример маршрута на карте" width="1200" height="450"/>  
 
 **Описание:**  
 - Построение кастомных маршрутов на основе туров.
@@ -20,7 +20,7 @@
 ---
 
 ### 2. Парковки
-<img src="./src/assets/md/parking.png" alt="Карта парковок с полигонами" width="1200" height="500"/> 
+<img src="./src/assets/md/parking.png" alt="Карта парковок с полигонами" width="1200" height="450"/> 
 
 **Описание:**  
 - Карты с зонами парковки, обозначенными зелёными полигонами.
@@ -88,4 +88,4 @@
 <img src="./src/assets/md/main.png" alt="главное меню" width="1200" height="500"/>
 
 ### Страница привествия /welcome
-<img src="./src/assets/md/welcome.png" alt="главное меню" width="320" height="650"/>
+<img src="./src/assets/md/welcome.png" alt="главное меню" width="320" height="600"/>
