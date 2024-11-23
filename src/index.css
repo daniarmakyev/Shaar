@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "chillax";
+  src: url("./assets/fonts/Chillax-Variable.ttf");
+}
+
+@layer base {
+  * {
+    @apply m-0 p-0 box-border;
+  }
+  body {
+    @apply font-chillax;
+  }
+  label {
+    @apply cursor-pointer;
+  }
+  input {
+    @apply bg-transparent outline-none;
+  }
+  .animate-def {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  .clickable {
+    @apply active:brightness-75 active:duration-100;
+  }
+  .scroll-none::-webkit-scrollbar {
+    @apply w-[0px];
+  }
+  .shadow-hidden {
+    @apply !shadow-none hover:!shadow-none;
+  }
+}
+
+@layer components {
+  .container {
+    @apply mx-auto px-40 max-w-[1410px];
+  }
+  .btn {
+    @apply rounded-[19px] py-20 px-50 bg-green-white text-white text-[32px] animate-def clickable  disabled:pointer-events-none disabled:bg-[#D4D4D4] gtbdf:text-[20px] gtbdf:py-[19px] gtbdf:px-60;
+  }
+}
