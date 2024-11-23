@@ -88,4 +88,4 @@
 <img src="./src/assets/md/main.png" alt="главное меню" width="1200" height="450"/>
 
 ### Страница привествия /welcome
-<img src="./src/assets/md/welcome.png" alt="главное меню" width="320" height="450"/>
+<img src="./src/assets/md/welcome.png" alt="главное меню" width="320" height="700"/>
