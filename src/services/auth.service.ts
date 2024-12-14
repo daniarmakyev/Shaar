@@ -11,8 +11,13 @@ class AuthService {
     });
   }
   login(body: ILoginForm) {
-    return $api.post<IAuthResponse>(apiConfig.Login, body);
+    return $api.post<IAuthResponse>(apiConfig.Login, body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
+
   refresh(refresh: string) {
     return $api.post(apiConfig.Refresh, { refresh });
   }

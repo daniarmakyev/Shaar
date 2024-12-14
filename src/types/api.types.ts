@@ -12,28 +12,20 @@ export interface IAuthResponse {
 export interface IRegisterBody extends Omit<IRegisterForm, "ava"> {
   ava: File;
 }
-export interface ISimpleData {
-  id: number;
-  name: string;
-}
+export type Category = string;  // Категории могут быть строками
+
 export interface IPlace {
   id: number;
   name: string;
-  avg_price: number;
-  avg_rating: number;
-  coordinates_x: number;
-  corrdinates_y: number;
-  description: string;
-  phone: string;
-  whatsapp: string;
-  instagram: string;
-  address: string;
-  images: { id: number; image: string }[];
-  categories: ISimpleData[];
+  price: number;
+  rating: number;
+  latitude: number;
+  longitude: number;
+  image_url: string;
+  category: string;
 }
 export interface IPlacesParams {
-  rating: number;
-  min_price: string;
-  max_price: string;
-  category: number[];
+  rating?: number; 
+  price?: number;  
+  categories: (number | string)[]; 
 }

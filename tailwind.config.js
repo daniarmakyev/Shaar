@@ -24,6 +24,7 @@ export default {
       borderRadius: {
         circle: "50%",
       },
+      backgroundColor: ["autofill"],
       padding: {
         10: "10px",
         20: "20px",

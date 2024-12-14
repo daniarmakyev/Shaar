@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import welcomeSecondImage from "../../../assets/images/welcome2.jpg";
 import welcomeFirstImage from "../../../assets/images/welcome1.jpg";
 import welcomeFirstMobileImage from "../../../assets/images/welcome1-mobile.png";
@@ -15,6 +16,7 @@ const images = [welcomeFirstImage, welcomeSecondImage];
 const mobileImages = [welcomeFirstMobileImage, welcomeSecondMobileImage];
 
 const Welcome: FC<Props> = ({ isActive }) => {
+  const { t } = useTranslation();
   const [stage, setStage] = useState(1);
 
   return (
@@ -28,7 +30,7 @@ const Welcome: FC<Props> = ({ isActive }) => {
         <motion.img
           key={image}
           src={image}
-          alt="welcome-first"
+          alt={t("welcome_image_alt")}
           initial={{ x: "-100%" }}
           animate={{ x: isActive && key + 1 === stage ? "0%" : "-100%" }}
           className="absolute left-0 flex-[0_1_841px] h-screen object-contain object-left gtbdf:hidden"
@@ -42,7 +44,7 @@ const Welcome: FC<Props> = ({ isActive }) => {
         {mobileImages.map((image, key) => (
           <motion.img
             src={image}
-            alt="welcome-mobile"
+            alt={t("welcome_mobile_image_alt")}
             initial={{ y: "-100%" }}
             animate={{ y: isActive && key + 1 === stage ? "0%" : "-100%" }}
             className="absolute top-[0px] max-w-[350px] w-full hidden gtbdf:block tbdf:max-w-[300px] z-[50]"
@@ -57,10 +59,10 @@ const Welcome: FC<Props> = ({ isActive }) => {
         <div className="pt-[208px] pr-40 pb-40 flex flex-col justify-between gap-[56px] gtbdf:rounded-[80px_0px_0px_0px] gtbdf:pt-[42px] gtbdf:px-[18px] gtbdf:bg-white">
           <div>
             <h1 className="text-[96px] font-bold text-green gtbdf:text-[50px]">
-              Welcome
+              {t("welcome_title")}
             </h1>
             <span className="mx-auto text-[40px] max-w-[500px] block gtbdf:text-[20px]">
-              Let's start our journey around the city together!
+              {t("welcome_message")}
             </span>
           </div>
           <div className="mx-auto flex max-w-[477px] w-full justify-between items-center">
@@ -80,14 +82,14 @@ const Welcome: FC<Props> = ({ isActive }) => {
             </div>
             {stage >= 2 ? (
               <Link to="/register" className="btn bg-green">
-                Get started
+                {t("get_started")}
               </Link>
             ) : (
               <button
                 onClick={() => setStage((prev) => prev + 1)}
                 className="btn bg-green"
               >
-                Next
+                {t("next")}
               </button>
             )}
           </div>

@@ -48,6 +48,15 @@ const RegisterPage: FC = () => {
       });
       navigate("/login");
     },
+    onError: () => {
+
+      setNotification({
+        message: t("order.error"),
+        isOpen: true,
+        isAutoClose: true,
+        type: "error",
+      });
+    },
   });
 
   const registerFunc: SubmitHandler<IRegisterForm> = async ({
@@ -57,8 +66,6 @@ const RegisterPage: FC = () => {
     ava,
   }) => {
     const defaultAvaFile = await urlToFile(avaDefaultImage, "default-ava.png");
-    console.log(ava[0] || defaultAvaFile);
-
     const form = new FormData();
     form.append("email", email);
     form.append("username", username);
@@ -79,7 +86,7 @@ const RegisterPage: FC = () => {
           <img src={arrowIcon} alt="arrow" />
         </button>
         <h1 className="text-4xl md:text-[64px] font-bold uppercase ">
-          Sign Up
+          {t("sign_up")}
         </h1>
         <div></div>
       </div>
@@ -113,42 +120,42 @@ const RegisterPage: FC = () => {
                 />
               </label>
               <span className="text-[#AFAFAF] lg:text-[32px] md:text-[28px] text-16">
-                Add your profile photo
+                {t("add_photo")}
               </span>
             </div>
             <div className="flex-[0_1_250px] md:flex-[0_1_550px] mx-3">
               <Input
                 icon={emailIcon}
                 type="email"
-                placeholder="youremail@gmail.com"
+                placeholder={t("email_placeholder")}
                 error={errors.email}
                 {...register("email", {
-                  required: "Поле не может быть пустым",
+                  required: t("field_required"),
                   pattern: {
                     value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    message: "Введён некорректный email",
+                    message: t("invalid_email"),
                   },
                 })}
               />
               <Input
                 icon={profileIcon}
-                placeholder="Username"
+                placeholder={t("username_placeholder")}
                 className="my-[48px]"
                 error={errors.username}
                 {...register("username", {
-                  required: "Поле не может быть пустым",
-                  minLength: { value: 2, message: "Минимум две буквы" },
+                  required: t("field_required"),
+                  minLength: { value: 2, message: t("min_length_2") },
                 })}
               />
               <Input
                 isPassword
                 icon={passwordIcon}
-                placeholder="your password"
+                placeholder={t("password_placeholder")}
                 className=""
                 error={errors.password}
                 {...register("password", {
-                  required: "Поле не может быть пустым",
-                  minLength: { value: 5, message: "Минимум пять символов" },
+                  required: t("field_required"),
+                  minLength: { value: 5, message: t("min_length_5") },
                 })}
               />
               <button
@@ -156,15 +163,15 @@ const RegisterPage: FC = () => {
                 onClick={handleSubmit(registerFunc)}
                 className="btn mt-[48px] rounded-[43px] py-[8px] px-80 font-bold"
               >
-                Sign Up
+                {t("sign_up")}
               </button>
             </div>
           </div>
           <div className="md:mt-[96px] md:text-[27px] text-18 text-center md:text-start max-w-64 md:max-w-none mx-auto mt-5 ">
             <span className=" text-green-white">
-              Already have an account?{" "}
+              {t("already_have_account")}{" "}
               <Link to="/login" className="font-bold">
-                Sign in
+                {t("sign_in")}
               </Link>
             </span>
           </div>

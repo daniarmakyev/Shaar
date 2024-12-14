@@ -6,20 +6,19 @@ export const $api = axios.create({ baseURL: API_URL });
 export const $apiPrivate = axios.create({ baseURL: API_URL });
 
 export enum apiConfig {
-  Register = "auth/auth/users/",
-  Login = "auth/auth/jwt/jwt/create/",
-  Refresh = "auth/auth/jwt/jwt/refresh/",
-  Categories = "place/categories/",
-  Places = "place/places/",
+  Register = "auth/register",
+  Login = "auth/jwt/create",
+  Refresh = "auth/jwt/refresh",
+  Categories = "places/categories",
+  Places = "places",
   AirQuality = "air-quality/",
 }
 
-export enum queryKeys {
-  MapText = "map-text",
-  Categories = "categories",
-  Places = "places",
-  AirQuality = "air-quality",
-}
+export const queryKeys = {
+  Categories: 'categories',
+  Places: 'places',
+  Ratings: 'ratings',
+} as const;
 
 $apiPrivate.interceptors.request.use((config) => {
   const accessToken = localStorage.getItem("shaar-access-token");
@@ -48,7 +47,7 @@ $apiPrivate.interceptors.response.use(
         );
         localStorage.setItem("shaar-access-token", data.access);
         return $api.request(originalRequest);
-      } catch (e) {}
+      } catch (e) { }
     }
     throw error;
   }

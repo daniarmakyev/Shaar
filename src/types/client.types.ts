@@ -6,7 +6,11 @@ export interface IRegisterForm {
   ava: FileList;
 }
 
-export interface ILoginForm extends Omit<IRegisterForm, "email"> {}
+export interface ILoginForm {
+  email: string;
+  password: string;
+}
+
 export interface INotification {
   message: string;
   isOpen: boolean;
@@ -17,9 +21,10 @@ export type RatingsType = "all" | 5.0 | 4.5 | 4.0 | 3.5 | 3.0;
 export interface IBuildingsFilter {
   categories: (number | string)[];
   rating: RatingsType;
-  price: [number, number];
-  radius: [number, number];
+  price: number;
 }
+
+
 export interface IBuilding {
   name: string;
   images: string[];
@@ -28,13 +33,12 @@ export interface IBuilding {
 }
 export interface ITour {
   id: number;
-  name: string;
-  description: string;
+  name: Record<string, string>;
+  description: Record<string, string>;
   contacts: { tel: string };
-  schedule: [
-    {
-      time: { start: string; end: string };
-      location: IBuilding;
-    }
-  ];
+  schedule: Array<{
+    time: { start: string; end: string };
+    location: IBuilding;
+  }>;
 }
+

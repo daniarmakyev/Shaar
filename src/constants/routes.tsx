@@ -39,7 +39,7 @@ export const routes2 = [
 export const routes3 = [
   { path: "/tours", element: <ToursPage />, label: "tours" },
   { path: "/tours/:id", element: <TourPage /> },
-  { path: "/map", element: <MapPage />, label: "map" },
+  { path: "/map/:latitude?/:longitude?/:tourId?", element: <MapPage />, label: "map" },
   { path: "/parking", element: <ParkingPage />, label: "parking" },
   { path: "/calendar", element: <CalendarPage /> },
 ];

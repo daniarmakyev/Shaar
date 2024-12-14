@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import Footer from "../../components/footer/Footer";
 import Search from "../../components/search/Search";
 import Filter from "../../components/filter/Filter";
+import WeatherAndAirQuality from "../../components/UtilitsMainPage/WeatherAndAir";
 
 const MainLayout: FC = () => {
   return (
@@ -12,6 +13,7 @@ const MainLayout: FC = () => {
       <main className="relative pt-[130px] min-h-[calc(100vh-61px)] bg-gray-bg">
         <Search />
         <Filter />
+        <WeatherAndAirQuality/>
         <Outlet />
       </main>
       <Footer />

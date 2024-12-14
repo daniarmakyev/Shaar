@@ -13,7 +13,7 @@ import { useAtom } from "jotai";
 import { isAuthAtom, notificationAtom } from "../../store/store";
 import { useTranslation } from "react-i18next";
 import { saveTokens } from "../../constants/helpers";
-
+import passwordIcon from "../../assets/images/icons/password-green.svg";
 const LoginPage: FC = () => {
   const navigate = useNavigate();
   const {
@@ -39,12 +39,20 @@ const LoginPage: FC = () => {
       saveTokens(access, refresh);
       setIsAuth(true);
       setNotification({
-        message: t("order.success"),
+        message: t("orderLogin.success"),
         isOpen: true,
         isAutoClose: true,
         type: "success",
       });
       navigate("/");
+    },
+    onError: () => {
+      setNotification({
+        message: t("orderLogin.error"),
+        isOpen: true,
+        isAutoClose: true,
+        type: "error",
+      });
     },
   });
 
@@ -88,30 +96,32 @@ const LoginPage: FC = () => {
         </button>
         <div className="mx-auto max-w-[520px] flex flex-col items-center mt-48 md:mt-20">
           <h1 className="text-nowrap mt-20 md:mt-0 sm:mt-20 text-[60px] sm:text-[80px] md:text-[100px] lg:text-[118px] font-bold [text-shadow:_1px_1px_8px_black] uppercase">
-            Sign In
+            {t("sign_in")}
           </h1>
-
           <Input
             icon={profileIcon}
+            type="email"
+            placeholder={t("email_placeholder")}
+            error={errors.email}
             className="mt-[60px] md:mt-[133px] mb-40 bg-white placeholder-black-bg"
-            inputClassName="!text-black"
-            placeholder="youremail@gmail.com"
-            error={errors.username}
-            {...register("username", {
-              required: "Поле не может быть пустым",
-              minLength: { value: 2, message: "Минимум две букв" },
+            {...register("email", {
+              required: t("field_required"),
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: t("invalid_email"),
+              },
             })}
           />
           <Input
             isPassword
-            icon={profileIcon}
+            icon={passwordIcon}
             className="mb-4 mt-10 md:mt-40 md:mb-30 bg-white min-w-[320px]"
             inputClassName="!text-black"
-            placeholder="your password"
+            placeholder={t("password_placeholder")}
             error={errors.password}
             {...register("password", {
-              required: "Поле не может быть пустым",
-              minLength: { value: 5, message: "Минимум пять символов" },
+              required: t("field_empty"),
+              minLength: { value: 5, message: t("min_length") },
             })}
           />
           <button
@@ -119,12 +129,12 @@ const LoginPage: FC = () => {
             onClick={handleSubmit(loginFunc)}
             className="btn py-2 mt-[40px] sm:mt-[100px] md:mt-[100px] mb-[27px] rounded-[43px] sm:px-[50px] md:px-[102px] md:py-[18px] bg-white text-green-white font-bold text-24 md:text-[40px]"
           >
-            Sign In
+            {t("sign_in")}
           </button>
           <span className="block text-[24px] max-w-72 mx-auto">
-            Don't hava an account?{" "}
+            {t("dont_have_account")}{" "}
             <Link to="/register" className="text-green-black font-bold">
-              Sign up
+              {t("sign_up")}
             </Link>
           </span>
         </div>

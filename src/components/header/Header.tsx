@@ -1,4 +1,4 @@
-import { FC, Fragment, SetStateAction, useState } from "react";
+import { FC, Fragment, SetStateAction, useEffect, useState } from "react";
 import logoIcon from "../../assets/images/icons/logo.svg";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { routes, routes3 } from "../../constants/routes";
@@ -11,6 +11,7 @@ import home from "../../assets/images/icons/home.svg";
 import qrNavbar from "../../assets/images/icons/qrScan.svg";
 import mapNavbar from "../../assets/images/icons/map-navbar.svg";
 import parkingNav from "../../assets/images/icons/park-navbar.svg";
+import { useTranslation } from "react-i18next";
 
 const Header: FC = () => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -19,14 +20,46 @@ const Header: FC = () => {
   const toggleMenu = () => {
     setMenuVisible((prevVisible) => !prevVisible);
   };
-  const [selectedImage, setSelectedImage] = useState(ruIcon); // Начальная иконка
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Состояние открытия списка
+  const [selectedImage, setSelectedImage] = useState(ruIcon);
 
-  const handleOptionClick = (icon: SetStateAction<string>) => {
-    setSelectedImage(icon); // Меняем иконку
-    setIsDropdownOpen(false); // Закрываем меню
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [, forceUpdate] = useState(0);
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    localStorage.getItem("i18nextLng") || "ru"
+  );
+
+  useEffect(() => {
+    // Обновление иконки в зависимости от выбранного языка
+    if (selectedLanguage === "ru") {
+      setSelectedImage(ruIcon);
+    } else if (selectedLanguage === "kg") {
+      setSelectedImage(kgIcon);
+    } else if (selectedLanguage === "en") {
+      setSelectedImage(enIcon);
+    }
+  }, [selectedLanguage]); // Перерисовка при изменении выбранного языка
+
+  const handleOptionClick = (icon: string, lang: string) => {
+    setSelectedImage(icon);
+    setSelectedLanguage(lang);
+    setIsDropdownOpen(false);
+    updateLanguage(lang);
+    forceUpdate((prev) => prev + 1);
   };
 
+  const updateLanguage = (lang: string) => {
+    localStorage.setItem("i18nextLng", lang);
+
+    document.cookie = `i18next=${lang}; path=/; expires=${getCookieExpiryDate()}`;
+  };
+
+  const getCookieExpiryDate = () => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+    return date.toUTCString();
+  };
+
+  const { t } = useTranslation();
   return (
     <header className="py-[16px] bg-green-bg text-white sm:font-comfortaa flex sm:block">
       <nav className="container sm:flex justify-between items-center hidden">
@@ -34,15 +67,20 @@ const Header: FC = () => {
           <Link to="/">
             <img src={logoIcon} alt="logo" className="min-w-24" />
           </Link>
-          <ul className="flex sm:gap-4 md:gap-14 lg:gap-20 items-center flex-grow justify-center sm:ml-0 ml-[150px] font-bold">
+          <ul className="flex sm:gap-4 md:gap-5 lg:gap-16 items-center md:flex-wrap flex-wrap lg:flex-nowrap flex-grow justify-center sm:ml-0 md:ml-9 ml-[150px] font-bold">
             {[...routes, ...routes3]
               //@ts-ignore
               .filter((route) => route.label && !route.icon)
-              .map(({ label, path }) => (
-                <li key={path}>
-                  <NavLink to={path}>{label}</NavLink>
-                </li>
-              ))}
+              .map(({ label, path }) => {
+                return (
+                  <li key={path}>
+                    <NavLink to={path}>{t(String(label))}</NavLink>
+                  </li>
+                );
+              })}
+            <NavLink to={"/calendar"} className={" "}>
+              {t("events")}
+            </NavLink>
           </ul>
         </div>
 
@@ -52,30 +90,28 @@ const Header: FC = () => {
             <img
               src={selectedImage}
               alt="Selected"
-              className="cursor-pointer w-10 h-10"
-              onClick={() => setIsDropdownOpen((prev) => !prev)} // Открываем/закрываем меню
+              className="cursor-pointer w-10 h-10 min-h-7 min-w-7"
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
             />
-
-            {/* Выпадающее меню */}
             {isDropdownOpen && (
               <div className="absolute bg-white border border-gray-300 rounded shadow-md mt-2 w-32 z-10 border-green text-black">
                 <div
-                  className="flex items-center p-2 cursor-pointer hover:bg-gray-100 "
-                  onClick={() => handleOptionClick(ruIcon)}
+                  className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleOptionClick(ruIcon, "ru")}
                 >
                   <img src={ruIcon} alt="Русский" className="w-6 h-6 mr-2" />
                   <span>Русский</span>
                 </div>
                 <div
                   className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleOptionClick(kgIcon)}
+                  onClick={() => handleOptionClick(kgIcon, "kg")}
                 >
                   <img src={kgIcon} alt="Кыргызча" className="w-6 h-6 mr-2" />
                   <span>Кыргызча</span>
                 </div>
                 <div
                   className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleOptionClick(enIcon)}
+                  onClick={() => handleOptionClick(enIcon, "en")}
                 >
                   <img src={enIcon} alt="English" className="w-6 h-6 mr-2" />
                   <span>English</span>
@@ -88,12 +124,12 @@ const Header: FC = () => {
             .map(({ path, label, icon }, key) => (
               <Fragment key={path}>
                 {!!key && (
-                  <div className="mx-[14px] flex-[0_0_1px] self-stretch bg-white"></div>
+                  <div className="mx-[14px]  self-stretch bg-white"></div>
                 )}
                 <li key={path} className="flex gap-[3px] items-center">
                   <img src={icon} alt="nav" className="w-[26px] h-[26px]" />
-                  <Link to={path}>{label}</Link>
-                  <Link to={"/calendar"}>{"Events"}</Link>
+
+                  <NavLink to={path}>{t(String(label))}</NavLink>
                 </li>
               </Fragment>
             ))}
@@ -143,21 +179,21 @@ const Header: FC = () => {
           <div className="absolute bg-white border border-gray-300 rounded shadow-md mt-2 w-32 z-10 border-green text-black right-0 sm:hidden">
             <div
               className="flex items-center p-2 cursor-pointer hover:bg-gray-100 "
-              onClick={() => handleOptionClick(ruIcon)}
+              onClick={() => handleOptionClick(ruIcon, "ru")}
             >
               <img src={ruIcon} alt="Русский" className="w-6 h-6 mr-2" />
               <span>Русский</span>
             </div>
             <div
               className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
-              onClick={() => handleOptionClick(kgIcon)}
+              onClick={() => handleOptionClick(kgIcon, "kg")}
             >
               <img src={kgIcon} alt="Кыргызча" className="w-6 h-6 mr-2" />
               <span>Кыргызча</span>
             </div>
             <div
               className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
-              onClick={() => handleOptionClick(enIcon)}
+              onClick={() => handleOptionClick(enIcon, "en")}
             >
               <img src={enIcon} alt="English" className="w-6 h-6 mr-2" />
               <span>English</span>
@@ -165,6 +201,7 @@ const Header: FC = () => {
           </div>
         )}
       </div>
+      {/* ------------------------------------------------------------------------------------------------------------------ */}
       <div
         style={{
           backgroundImage: `url(${sidebarBg})`,
@@ -178,7 +215,7 @@ const Header: FC = () => {
       >
         <div className="flex flex-col justify-between h-full">
           <div className="flex items-center gap-4 mb-5 justify-between z-10">
-            <p className="text-[#E5FFF3] text-4xl font-bold">Menu</p>
+            <p className="text-[#E5FFF3] text-4xl font-bold"> {t("menu")}</p>
             <button
               onClick={toggleMenu}
               className="p-2 rounded-full hover:bg-gray-800 cursor-pointer"
@@ -207,7 +244,7 @@ const Header: FC = () => {
                   strokeLinejoin="round"
                 />
               </svg>
-              Home
+              {t("home")}
             </Link>
             <Link
               to={"/"}
@@ -228,7 +265,7 @@ const Header: FC = () => {
                   fill="#ECE8E8"
                 />
               </svg>
-              Profile
+              {t("profile")}
             </Link>
             <hr className="absolute left-0 border-white z-50 w-[70%]" />
             {/* ----------- */}
@@ -249,7 +286,7 @@ const Header: FC = () => {
                   fill="#ECE8E8"
                 />
               </svg>
-              Bookmark
+              {t("bookmark")}
             </Link>
             <Link
               to={"/"}
@@ -268,7 +305,7 @@ const Header: FC = () => {
                   fill="#ECE8E8"
                 />
               </svg>
-              Notifications
+              {t("notifications")}
             </Link>
             <Link className="flex ms-3 gap-2" to={"/calendar"}>
               <svg
@@ -282,7 +319,8 @@ const Header: FC = () => {
                   d="M0 8.66671V5.33337H3.33333V3.66671C3.33333 2.78265 3.68452 1.93481 4.30964 1.30968C4.93476 0.684563 5.78261 0.333374 6.66667 0.333374H16.6667V12L20.8333 9.50004L25 12V0.333374H26.6667C28.4167 0.333374 30 1.91671 30 3.66671V30.3334C30 32.0834 28.4167 33.6667 26.6667 33.6667H6.66667C4.91667 33.6667 3.33333 32.0834 3.33333 30.3334V28.6667H0V25.3334H3.33333V18.6667H0V15.3334H3.33333V8.66671H0ZM6.66667 15.3334H3.33333V18.6667H6.66667V15.3334ZM6.66667 8.66671V5.33337H3.33333V8.66671H6.66667ZM6.66667 28.6667V25.3334H3.33333V28.6667H6.66667Z"
                   fill="#F0FFF8"
                 />
-              </svg>Calendar
+              </svg>
+              {t("calendar")}
             </Link>
             <Link
               to={"/"}
@@ -303,9 +341,105 @@ const Header: FC = () => {
                   fill="#ECE8E8"
                 />
               </svg>
-              Payment
+              {t("payment")}
             </Link>
-
+            <Link
+              to={"/calendar"}
+              className={
+                " flex items-center p-2.5 rounded-lg hover:bg-gray-800 cursor-pointer gap-2.5"
+              }
+            >
+              {" "}
+              <svg
+                version="1.1"
+                id="Capa_1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                viewBox="0 0 452.986 452.986"
+                width={31}
+                height={25}
+                xmlSpace="preserve"
+                fill="#000000"
+              >
+                <g>
+                  <path
+                    style={{ fill: "#fff" }}
+                    d="M404.344,0H48.642C21.894,0,0,21.873,0,48.664v355.681c0,26.726,21.894,48.642,48.642,48.642 h355.702c26.726,0,48.642-21.916,48.642-48.642V48.664C452.986,21.873,431.07,0,404.344,0z M148.429,33.629h156.043v40.337 H148.429V33.629z M410.902,406.372H42.041v-293.88h368.86V406.372z"
+                  />
+                  <rect
+                    x="79.273"
+                    y="246.23"
+                    style={{ fill: "#fff" }}
+                    width="48.642"
+                    height="48.664"
+                  ></rect>
+                  <rect
+                    x="79.273"
+                    y="323.26"
+                    style={{ fill: "#fff" }}
+                    width="48.642"
+                    height="48.642"
+                  ></rect>
+                  <rect
+                    x="160.853"
+                    y="169.223"
+                    style={{ fill: "#fff" }}
+                    width="48.621"
+                    height="48.642"
+                  ></rect>
+                  <rect
+                    x="160.853"
+                    y="246.23"
+                    style={{ fill: "#fff" }}
+                    width="48.621"
+                    height="48.664"
+                  ></rect>
+                  <rect
+                    x="160.853"
+                    y="323.26"
+                    style={{ fill: "#fff" }}
+                    width="48.621"
+                    height="48.642"
+                  ></rect>
+                  <rect
+                    x="242.369"
+                    y="169.223"
+                    style={{ fill: "#fff" }}
+                    width="48.664"
+                    height="48.642"
+                  ></rect>
+                  <rect
+                    x="242.369"
+                    y="246.23"
+                    style={{ fill: "#fff" }}
+                    width="48.664"
+                    height="48.664"
+                  ></rect>
+                  <rect
+                    x="242.369"
+                    y="323.26"
+                    style={{ fill: "#fff" }}
+                    width="48.664"
+                    height="48.642"
+                  ></rect>
+                  <rect
+                    x="323.907"
+                    y="169.223"
+                    style={{ fill: "#fff" }}
+                    width="48.664"
+                    height="48.642"
+                  ></rect>
+                  <rect
+                    x="323.907"
+                    y="246.23"
+                    style={{ fill: "#fff" }}
+                    width="48.664"
+                    height="48.664"
+                  ></rect>
+                </g>
+              </svg>{" "}
+              {t("events")}
+            </Link>
             <hr />
             <Link
               to={"/"}
@@ -326,8 +460,9 @@ const Header: FC = () => {
                   fill="#ECE8E8"
                 />
               </svg>
-              Settings
+              {t("settings")}
             </Link>
+            {/* ----------------------------------------------------------------------------------------------------------------------- */}
             <Link
               to={"/"}
               className="flex items-center p-2.5 rounded-lg hover:bg-gray-800 cursor-pointer gap-2.5"
@@ -345,7 +480,7 @@ const Header: FC = () => {
                   fill="#ECE8E8"
                 />
               </svg>
-              Help
+              {t("help")}
             </Link>
           </div>
           <Link
@@ -367,7 +502,7 @@ const Header: FC = () => {
                 fill="#ECE8E8"
               />
             </svg>
-            Logout
+            {t("logout")}
           </Link>
         </div>
       </div>

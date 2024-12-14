@@ -7,14 +7,17 @@ import {
   Libraries,
   DirectionsRenderer,
   Polygon,
+  MarkerClusterer,
 } from "@react-google-maps/api";
+import greenRound from "../../assets/images/greenRound.png";
 const googleMapsApiKey = import.meta.env.VITE_MAP_KEY;
 const ParkingPage: FC = React.memo(() => {
   const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
   const [polygons, setPolygons] = useState<google.maps.LatLngLiteral[][]>([]);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [userLocation, setUserLocation] = useState<{
-    lat: number;
-    lng: number;
+    lat: 42.840480748627705;
+    lng: 74.60114410741835;
   } | null>(null);
   const [markerClicked, setMarkerClicked] = useState(false);
   const [selectedMarker, setSelectedMarker] = useState<{
@@ -27,9 +30,10 @@ const ParkingPage: FC = React.memo(() => {
     useState<google.maps.drawing.OverlayType | null>(null);
   const [deleteMode, setDeleteMode] = useState(false);
   const [distance, setDistance] = useState<number | null>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
   const geocoder = useRef<google.maps.Geocoder | null>(null);
   const [controlsVisible, setControlsVisible] = useState(true);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const markerClustererRef = useRef<MarkerClusterer | null>(null);
 
   let userRole = "admin"; // ADMINKA
   const center = { lat: 42.826434, lng: 74.548867 };
@@ -51,6 +55,22 @@ const ParkingPage: FC = React.memo(() => {
     { lat: 42.82782494240816, lng: 74.55095657937358 },
     { lat: 42.82784264659002, lng: 74.55102229349444 },
     { lat: 42.827854449375096, lng: 74.55109068982432 },
+    { lat: 42.844948, lng: 74.584776 },
+    { lat: 42.844948, lng: 74.584827 },
+    { lat: 42.828458, lng: 74.584715 },
+    { lat: 42.828458, lng: 74.584824 },
+    { lat: 42.828455, lng: 74.584924 },
+    { lat: 42.828563, lng: 74.584916 },
+    { lat: 42.828574, lng: 74.584773 },
+    { lat: 42.828682, lng: 74.584769 },
+    { lat: 42.828673, lng: 74.584889 },
+    { lat: 42.844962, lng: 74.584647 },
+    { lat: 42.844949, lng: 74.584877 },
+    { lat: 42.840311, lng: 74.600385 },
+    { lat: 42.840265, lng: 74.600396 },
+    { lat: 42.840222, lng: 74.600396 },
+    { lat: 42.840179, lng: 74.600396 },
+    { lat: 42.84014, lng: 74.600399 },
   ];
 
   const poly = [
@@ -68,12 +88,70 @@ const ParkingPage: FC = React.memo(() => {
       { lat: 42.82782494240816, lng: 74.55124625794718 },
 
       { lat: 42.82789969336371, lng: 74.55111751191447 },
-    ]
+    ],
+    [
+      {
+        lat: 42.84036168679825,
+        lng: 74.60034301103673,
+      },
+      {
+        lat: 42.84012076158662,
+        lng: 74.60038324417195,
+      },
+      {
+        lat: 42.84014042898606,
+        lng: 74.60046102823338,
+      },
+      {
+        lat: 42.84040790499677,
+        lng: 74.60041811288914,
+      },
+      {
+        lat: 42.84039872048276,
+        lng: 74.60033732824876,
+      },
+    ],
+    [
+      {
+        lat: 42.844991858077364,
+        lng: 74.58452597324803,
+      },
+      {
+        lat: 42.84494662660128,
+        lng: 74.58452463214353,
+      },
+      {
+        lat: 42.84492597743813,
+        lng: 74.58548486297086,
+      },
+      {
+        lat: 42.844976125393785,
+        lng: 74.58550497953847,
+      },
+    ],
+    [
+      {
+        lat: 42.82889705035056,
+        lng: 74.58470458076798,
+      },
+      {
+        lat: 42.82838953711723,
+        lng: 74.58467775867783,
+      },
+      {
+        lat: 42.828328556564585,
+        lng: 74.58508277223908,
+      },
+      {
+        lat: 42.82910359524088,
+        lng: 74.5850881366571,
+      },
+      {
+        lat: 42.82910359524088,
+        lng: 74.58470189855896,
+      },
+    ],
   ];
-
-  useEffect(() => {
-    setUserLocation(center);
-  }, []);
 
   const handleOverlayComplete = (
     event: google.maps.drawing.OverlayCompleteEvent
@@ -124,8 +202,8 @@ const ParkingPage: FC = React.memo(() => {
       handleDelete(marker.lat, marker.lng);
     } else {
       setSelectedMarker({ lat: marker.lat, lng: marker.lng, address: "" });
-      calculateDistance(marker); 
-      fetchAddress(marker); 
+      calculateDistance(marker);
+      fetchAddress(marker);
     }
     setMarkerClicked(true);
   };
@@ -139,6 +217,11 @@ const ParkingPage: FC = React.memo(() => {
       setPolygons((prev) => prev.filter((_, index) => index !== polygonIndex));
     }
   };
+  useEffect(() => {
+    if (navigator.geolocation) {
+      setUserLocation({ lat: 42.840480748627705, lng: 74.60114410741835 });
+    }
+  }, []);
 
   const calculateDistance = (marker: { lat: number; lng: number }) => {
     if (userLocation) {
@@ -152,14 +235,43 @@ const ParkingPage: FC = React.memo(() => {
       distanceService.getDistanceMatrix(request, (response, status) => {
         if (status === google.maps.DistanceMatrixStatus.OK && response) {
           const distanceInMeters = response.rows[0].elements[0].distance.value;
-          const distanceInKm = distanceInMeters / 1000; 
-          setDistance(distanceInKm); 
-          console.log(`Расстояние: ${distanceInKm} км`);
+          const distanceInKm = distanceInMeters / 1000;
+          const roundedDistance = distanceInKm.toFixed(1);
+          setDistance(Number(roundedDistance));
+          console.log(`Расстояние: ${roundedDistance} км`);
         } else {
           console.error("Ошибка при получении расстояния");
         }
       });
     }
+  };
+  const clusterOptions = {
+    imagePath: greenRound,
+    maxZoom: 17,
+    gridSize: 60,
+    styles: [
+      {
+        url: greenRound,
+        height: 53,
+        width: 53,
+        textColor: "#FFFFFF",
+        textSize: 16,
+      },
+      {
+        url: greenRound,
+        height: 56,
+        width: 56,
+        textColor: "#FFFFFF",
+        textSize: 18,
+      },
+      {
+        url: greenRound,
+        height: 66,
+        width: 66,
+        textColor: "#FFFFFF",
+        textSize: 20,
+      },
+    ],
   };
 
   const fetchAddress = (marker: { lat: number; lng: number }) => {
@@ -221,10 +333,13 @@ const ParkingPage: FC = React.memo(() => {
       >
         <GoogleMap
           mapContainerStyle={mapStyles}
-          center={userLocation || defaultCenter}
+          center={
+            userLocation || { lat: 42.840480748627705, lng: 74.60114410741835 }
+          }
           zoom={16}
           onLoad={(map) => {
             mapRef.current = map;
+            setMapLoaded(true);
           }}
           onClick={(e) => {
             if (deleteMode) {
@@ -243,18 +358,24 @@ const ParkingPage: FC = React.memo(() => {
               }}
             />
           )}
+          {mapLoaded && userLocation && <Marker position={userLocation} />}
+          {mapLoaded && (
+            <MarkerClusterer options={clusterOptions}>
+              {(clusterer) => (
+                <>
+                  {maki.map((marker, index) => (
+                    <Marker
+                      key={index}
+                      position={marker}
+                      clusterer={clusterer}
+                      onClick={() => handleMarkerClick(marker)}
+                    />
+                  ))}
+                </>
+              )}
+            </MarkerClusterer>
+          )}
 
-          {maki.map((marker, index) => (
-            <Marker
-              key={index}
-              position={marker}
-              onClick={() =>
-                deleteMode
-                  ? handleDelete(marker.lat, marker.lng)
-                  : handleMarkerClick(marker)
-              }
-            />
-          ))}
           {poly.map((polygon, index) => (
             <Polygon
               key={index}
@@ -271,14 +392,7 @@ const ParkingPage: FC = React.memo(() => {
               }}
             />
           ))}
-          {userLocation && (
-            <Marker
-              position={userLocation}
-              icon={{
-                url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-              }}
-            />
-          )}
+
           {drawingMode && (
             <DrawingManager
               onOverlayComplete={handleOverlayComplete}
@@ -378,9 +492,9 @@ const ParkingPage: FC = React.memo(() => {
             >
               Build a route
             </button>
-            <button className="bg-green-500 text-white font-semibold px-12 py-2 rounded-xl mt-4 bg-green-white">
+            {/* <button className="bg-green-500 text-white font-semibold px-12 py-2 rounded-xl mt-4 bg-green-white">
               Book
-            </button>
+            </button> */}
           </div>
         </div>
       )}
