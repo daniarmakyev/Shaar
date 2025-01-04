@@ -20,7 +20,7 @@
 ---
 
 ### 2. Парковки
-<img src="./src/assets/md/parking.png" alt="Карта парковок с полигонами" width="1400" height="620"/> 
+<img src="./src/assets/md/parking.png" alt="Карта парковок с полигонами" width="1920" height="550"/>  
 
 **Описание:**  
 - Карты с зонами парковки, обозначенными зелёными полигонами.
@@ -30,7 +30,7 @@
 ---
 
 ### 3. События
-<img src="./src/assets/md/Снимок экрана 2024-11-23 в 17.43.40.png" alt="Пример страницы календаря" width="1400" height="620"/>  
+<img src="./src/assets/md/Снимок экрана 2024-11-23 в 17.43.40.png" alt="Пример страницы календаря" width="1920" height="550"/>  
 
 **Описание:**  
 - Страница с календарём ближайших мероприятий в Бишкеке.  
@@ -39,7 +39,7 @@
 ---
 
 ### 4. Конструктор парковок
-<img src="./src/assets/md/parking.png" alt="Интерфейс конструктора парковок" width="1400" height="620"/>  
+<img src="./src/assets/md/parking.png" alt="Интерфейс конструктора парковок" width="1920" height="550"/>   
 
 **Описание:**  
 - Полностью интерактивный инструмент для добавления новых зон парковки.
@@ -49,7 +49,7 @@
 ---
 
 ### 5. Регистрация и авторизация
-<img src="./src/assets/md/login.png" alt="Логин" width="1400" height="620"/>  
+<img src="./src/assets/md/login.png" alt="Логин" width="1920" height="550"/>    
 <img src="./src/assets/md/registerMini.png" alt="Логин" width="320" height="550"/> 
 
 Для использования функционала приложения предусмотрены следующие возможности регистрации и логина:
@@ -85,7 +85,7 @@
 <img src="./src/assets/md/sidebar.png" alt="сайдбар" width="400" height="650"/>
 
 ### Главное меню
-<img src="./src/assets/md/main.png" alt="главное меню" width="1400" height="620"/>
+<img src="./src/assets/md/main.png" alt="главное меню" width="1920" height="550"/>  
 
 ### Страница привествия /welcome
 <img src="./src/assets/md/welcome.png" alt="главное меню" width="320" height="650"/>
