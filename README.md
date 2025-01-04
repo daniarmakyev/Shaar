@@ -10,7 +10,7 @@
 
 ### 1. Туристические маршруты
 <img src="./src/assets/md/mapmIni.png" alt="Пример маршрута на карте" width="400" height="700"/>  
-<img src="./src/assets/md/mapBig.png" alt="Пример маршрута на карте" width="1920" height="700"/>  
+<img src="./src/assets/md/mapBig.png" alt="Пример маршрута на карте" width="1920" height="550"/>  
 
 **Описание:**  
 - Построение кастомных маршрутов на основе туров.
