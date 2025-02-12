@@ -6,10 +6,10 @@ export const $api = axios.create({ baseURL: API_URL });
 export const $apiPrivate = axios.create({ baseURL: API_URL });
 
 export enum apiConfig {
-  Register = "auth/register",
-  Login = "auth/jwt/create",
-  Refresh = "auth/jwt/refresh",
-  Categories = "places/categories",
+  Register = "/signup",
+  Login = "/signin",
+  Refresh = "/refresh",
+  Categories = "/categories",
   Places = "places",
   AirQuality = "air-quality/",
 }
@@ -39,13 +39,13 @@ $apiPrivate.interceptors.response.use(
     ) {
       originalRequest._isRetry = true;
       try {
-        const { data } = await axios.post<{ access: string }>(
-          `${API_URL}/${apiConfig.Refresh}`,
+        const { data } = await axios.post<{ accessToken: string }>(
+          `${API_URL}${apiConfig.Refresh}`,
           {
-            refresh: Cookies.get("refresh"),
+            refreshToken: Cookies.get("shaar-refresh-token"),
           }
         );
-        localStorage.setItem("shaar-access-token", data.access);
+        localStorage.setItem("shaar-access-token", data.accessToken);
         return $api.request(originalRequest);
       } catch (e) { }
     }

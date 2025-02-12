@@ -35,8 +35,8 @@ const LoginPage: FC = () => {
         type: "loading",
       });
     },
-    onSuccess: ({ data: { access, refresh } }) => {
-      saveTokens(access, refresh);
+    onSuccess: ({ data: { accessToken, refreshToken } }) => {
+      saveTokens(accessToken, refreshToken);
       setIsAuth(true);
       setNotification({
         message: t("orderLogin.success"),

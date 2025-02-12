@@ -1,9 +1,9 @@
-import { $api, apiConfig } from "../constants/api";
+import { $api, $apiPrivate, apiConfig } from "../constants/api";
 import { IPlace, IPlacesParams, Category } from "../types/api.types";
 
 class PlacesService {
   getCategories() {
-    return $api<Category[]>(apiConfig.Categories);
+    return $apiPrivate<Category[]>(apiConfig.Categories);
   }
 
   getAll(params?: Partial<IPlacesParams>) {

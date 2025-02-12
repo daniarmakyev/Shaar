@@ -28,7 +28,7 @@ const Welcome: FC<Props> = ({ isActive }) => {
     >
       {images.map((image, key) => (
         <motion.img
-          key={image}
+          key={key}
           src={image}
           alt={t("welcome_image_alt")}
           initial={{ x: "-100%" }}
@@ -43,6 +43,7 @@ const Welcome: FC<Props> = ({ isActive }) => {
       >
         {mobileImages.map((image, key) => (
           <motion.img
+          key={key}
             src={image}
             alt={t("welcome_mobile_image_alt")}
             initial={{ y: "-100%" }}

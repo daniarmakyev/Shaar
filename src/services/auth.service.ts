@@ -18,8 +18,8 @@ class AuthService {
     });
   }
 
-  refresh(refresh: string) {
-    return $api.post(apiConfig.Refresh, { refresh });
+  refresh(refreshToken: string) {
+    return $api.post(apiConfig.Refresh, { refreshToken });
   }
 }
 

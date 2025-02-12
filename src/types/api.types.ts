@@ -6,8 +6,8 @@ export interface IUser {
   username: string;
 }
 export interface IAuthResponse {
-  access: string;
-  refresh: string;
+  accessToken: string;
+  refreshToken: string;
 }
 export interface IRegisterBody extends Omit<IRegisterForm, "ava"> {
   ava: File;

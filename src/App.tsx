@@ -28,7 +28,7 @@ function App() {
     const refreshToken = Cookies.get("shaar-refresh-token");
 
     if (refreshToken) {
-      refresh(refreshToken);
+
     } else setIsLoading(false);
   }, []);
 

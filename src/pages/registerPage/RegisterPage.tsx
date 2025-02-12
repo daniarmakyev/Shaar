@@ -65,7 +65,7 @@ const RegisterPage: FC = () => {
     password,
     ava,
   }) => {
-    const defaultAvaFile = await urlToFile(avaDefaultImage, "default-ava.png");
+    const defaultAvaFile = await urlToFile(avaDefaultImage, "ava-default.png");
     const form = new FormData();
     form.append("email", email);
     form.append("username", username);
