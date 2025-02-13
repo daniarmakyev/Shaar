@@ -1,14 +1,19 @@
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 import { useAtom } from "jotai";
+import arrow from "../../assets/images/icons/arrow-swiper.png";
 import { buildingsFilterAtom } from "../../store/store";
 import { usePlaces } from "../../hooks/queries/usePlaces";
 //@ts-ignore
 import "swiper/css";
+//@ts-ignore
+import "swiper/css/navigation";
 import { IPlace } from "../../types/api.types";
 import { Link } from "react-router-dom";
-import star from "../../assets/images/icons/star.svg"
+import star from "../../assets/images/icons/star.svg";
+
 const MainPage: FC = () => {
   const { t } = useTranslation();
   const [buildingsFilter] = useAtom(buildingsFilterAtom);
@@ -34,7 +39,7 @@ const MainPage: FC = () => {
   ): Record<string, IPlace[]> => {
     if (!places) return {};
     return places.reduce((acc, place) => {
-      const category = place.category;
+      const category = place.Category;
       if (!acc[category]) {
         acc[category] = [];
       }
@@ -67,7 +72,7 @@ const MainPage: FC = () => {
           return (
             <div
               key={category}
-              className="sm:container mx-5 mt-[15px] mb-[19px]"
+              className="sm:container mt-[15px] mb-[19px] relative"
             >
               <h3 className="text-[#237B52] font-bold sm:text-[32px] text-[30px] md:text-[36px]">
                 {t("category")}: {category}
@@ -75,38 +80,54 @@ const MainPage: FC = () => {
               <Swiper
                 slidesPerView="auto"
                 spaceBetween={14}
-                className="mt-[26px]"
+                navigation={{
+                  nextEl: ".swiper-button-next",
+                  prevEl: ".swiper-button-prev",
+                }}
+                modules={[Navigation]}
+                className="mt-[26px] -10"
               >
-                {places.map((place) => (
-                  <SwiperSlide
-                    key={place.id}
-                    className="min-w-32 max-w-[154px] w-full"
-                  >
-                    <Link to={`/map/${place.latitude + "/" + place.longitude}`}>
-                      {" "}
-                      <img
-                        alt="place"
-                        src={place.image_url}
-                        className="rounded-[25px] w-full h-32 sm:h-[157px] object-cover"
-                      />
-                      <span className="absolute flex gap-1 flex-nowrap top-2 bg-white px-2 rounded-xl left-2 text-green-bg font-semibold">{place.rating}
-                        <img src={star} alt="" />
-                      </span>
-                      <div className="justify-center flex gap-2 text-green-white">
+                <div className="mx-12">
+                  {places.map((place) => (
+                    <SwiperSlide
+                      key={place.ID}
+                      className="min-w-32 max-w-[154px] w-full"
+                    >
+                      <Link
+                        to={`/map/${place.Latitude + "/" + place.Longitude}`}
+                      >
                         {" "}
-                        <span className="text-sm font-semibold text-nowrap text-green-bg">
-                          {place.name}
-                        </span>{" "}
-                        <span className="text-sm font-medium">
-                          {" "}
-                          {category === "hotel"
-                            ? `${place.price}/night`
-                            : `${place.price}/dish`}
+                        <img
+                          alt="place"
+                          src={`${place.ImageURL}`}
+                          className="rounded-[25px] w-full h-32 sm:h-[157px] object-cover"
+                        />
+                        <span className="absolute flex gap-1  ps-2 pe-1 flex-nowrap top-2 bg-white  rounded-xl left-2 text-green-bg font-semibold">
+                          {place.Rating}
+                          <img src={star} alt="rayting star" />
                         </span>
-                      </div>
-                    </Link>
-                  </SwiperSlide>
-                ))}
+                        <div className="justify-center flex gap-2 text-green-white">
+                          {" "}
+                          <span className="text-sm font-semibold text-nowrap text-green-bg">
+                            {place.Name}
+                          </span>{" "}
+                          <span className="text-sm font-medium">
+                            {" "}
+                            {category === "hotel"
+                              ? `${place.Price}/night`
+                              : `${place.Price}/dish`}
+                          </span>
+                        </div>
+                      </Link>
+                    </SwiperSlide>
+                  ))}
+                </div>
+                <div className="swiper-button-next custom-next-button before:content-none after:content-none w-10 right-1">
+                  <img src={arrow} alt="Next" />
+                </div>
+                <div className="swiper-button-prev custom-prev-button before:content-none after:content-none w-10 left-1">
+                  <img src={arrow} alt="Next" className="rotate-180" />
+                </div>
               </Swiper>
             </div>
           );

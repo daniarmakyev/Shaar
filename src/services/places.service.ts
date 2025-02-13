@@ -1,4 +1,4 @@
-import { $api, $apiPrivate, apiConfig } from "../constants/api";
+import { $apiPrivate, apiConfig } from "../constants/api";
 import { IPlace, IPlacesParams, Category } from "../types/api.types";
 
 class PlacesService {
@@ -21,7 +21,7 @@ class PlacesService {
       finalParams.price = params.price;
     }
 
-    return $api<IPlace[]>(apiConfig.Places, { params: finalParams });
+    return $apiPrivate<IPlace[]>(apiConfig.Places, { params: finalParams });
   }
 }
 

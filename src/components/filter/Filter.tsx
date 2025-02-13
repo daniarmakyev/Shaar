@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import filterIcon from "../../assets/images/icons/filter.svg";
 import starIcon from "../../assets/images/icons/star.svg";
@@ -23,7 +23,13 @@ const Filter: FC = () => {
   const [buildingFilter, setBuildingFilter] = useAtom(buildingsFilterAtom);
   const [pricesLocal, setPricesLocal] = useState([0, 0]);
   const [radiusLocal, setRadiusLocal] = useState([0, 0]);
-  const ref = useClickAway<HTMLDivElement>(() => setIsFilterOpen(false));
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const ref = useClickAway<HTMLDivElement>((event) => {
+    if (buttonRef.current && buttonRef.current.contains(event.target as Node)) {
+      return;
+    }
+    setIsFilterOpen(false);
+  });
 
   const { t } = useTranslation();
   const {} = usePlaces();
@@ -51,6 +57,7 @@ const Filter: FC = () => {
         price: buildingFilter.price,
       }),
   });
+
   useEffect(() => {
     console.log("Before sending request:", buildingFilter.categories);
     if (buildingFilter.categories.length > 0) {
@@ -91,6 +98,11 @@ const Filter: FC = () => {
     setRadiusLocal(newValue);
   };
 
+  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIsFilterOpen((prev) => !prev);
+  };
+
   return (
     <>
       <div className="w-full h-[1px] bg-[#D9D9D9] "></div>
@@ -117,7 +129,7 @@ const Filter: FC = () => {
             <li key={category}>
               <Link
                 to={`/`}
-                onClick={() => changeCategory(category)} 
+                onClick={() => changeCategory(category)}
                 className={clsx(
                   "rounded-[11px] px-[15px] h-[46px] flex items-center bg-[#E7E7E7] font-bold text-[14px] text-green-2 btn shadow-hidden animate-def hover:translate-y-[-10px]",
                   {
@@ -139,7 +151,8 @@ const Filter: FC = () => {
           )}
 
           <button
-            onClick={() => setIsFilterOpen((prev) => !prev)}
+            ref={buttonRef}
+            onClick={handleButtonClick}
             className={clsx(
               "flex justify-center btn bg-green-3 rounded-[11px] px-[20px] py-[14px] shadow-hidden gap-[16px] items-center text-[14px] font-bold !shadow-[1px_1px_20px_rgba(0,0,0,0.5)] hover:!shadow-[1px_1px_20px_rgba(0,0,0,0.5)]",
               {
