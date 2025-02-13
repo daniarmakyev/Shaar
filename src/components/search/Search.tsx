@@ -1,13 +1,10 @@
 import { FC, useState } from "react";
 import searchIcon from "../../assets/images/icons/search.svg";
-import voiceIcon from "../../assets/images/icons/voice.svg";
-import VoiceListener from "../voiceListener/VoiceListener";
 import { useAtom } from "jotai";
 import { searchValueAtom } from "../../store/store";
 
 const Search: FC = () => {
   const [searchValue, setSearchValue] = useAtom(searchValueAtom);
-  const [isVoiceListening, setIsVoiceListeningAtom] = useState(false);
 
   return (
     <>
@@ -21,15 +18,7 @@ const Search: FC = () => {
           value={searchValue}
           onChange={({ target: { value } }) => setSearchValue(value)}
         />
-        <button onClick={() => setIsVoiceListeningAtom(true)}>
-          <img src={voiceIcon} alt="voice" />
-        </button>
       </div>
-      <VoiceListener
-        isActive={isVoiceListening}
-        close={() => setIsVoiceListeningAtom(false)}
-        setSearchValue={(value: string) => setSearchValue(value)}
-      />
     </>
   );
 };

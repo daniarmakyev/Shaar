@@ -1,5 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
-import axios from "axios";
+import { FC, useEffect, useState } from "react";
 import weatherImage from "../../assets/images/weather.png";
 
 // @ts-ignore
@@ -9,44 +8,38 @@ import nice from "../../assets/images/icons/nice.png";
 import regular from "../../assets/images/icons/regular.png";
 import sad from "../../assets/images/icons/sad.png";
 import angry from "../../assets/images/icons/angry.png";
+import AirAndWeatherService from "../../services/aiQuality.service";
 
-interface WeatherData {
-  temperature: number;
-  description: string;
-  icon: string;
+interface WeatherResponse {
+  region: string;
+  temp_c: number;
 }
 
-interface AirQualityData {
-  aqi: number;
-  level: string;
+interface AirResponse {
+  city: string;
+  aqius: number;
 }
 
 const WeatherAndAirQuality: FC = () => {
   const [airQualityIndex, setAirQualityIndex] = useState<number | null>(null);
   const [temperature, setTemperature] = useState<number | null>(null);
 
-  const bishkekCoordinates = { lat: 42.840079, lon: 74.601139 };
-
   useEffect(() => {
-    const fetchAirQuality = async () => {
+    const fetchTemperature = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/air/quality?lat=${bishkekCoordinates.lat}&lon=${bishkekCoordinates.lon}`
-        );
-        setAirQualityIndex(response.data.air_quality_index);
+        const { data }: { data: WeatherResponse } = await AirAndWeatherService.getWeather();
+        setTemperature(data.temp_c);
       } catch (error) {
-        console.error("Error fetching air quality data:", error);
+        console.error("Error fetching temperature data:", error);
       }
     };
 
-    const fetchTemperature = async () => {
+    const fetchAirQuality = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/weather?lat=${bishkekCoordinates.lat}&lon=${bishkekCoordinates.lon}`
-        );
-        setTemperature(response.data.temperature);
+        const { data }: { data: AirResponse }  = await AirAndWeatherService.getAir();
+        setAirQualityIndex(data.aqius);
       } catch (error) {
-        console.error("Error fetching temperature data:", error);
+        console.error("Error fetching air quality data:", error);
       }
     };
 
@@ -84,11 +77,7 @@ const WeatherAndAirQuality: FC = () => {
             }}
           >
             <span>
-              <img
-                src={weatherImage}
-                alt=""
-                className="-mt-2 ms-2"
-              />
+              <img src={weatherImage} alt="" className="-mt-2 ms-2" />
             </span>
           </div>
         </div>

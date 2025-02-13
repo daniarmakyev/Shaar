@@ -11,7 +11,8 @@ export enum apiConfig {
   Refresh = "/refresh",
   Categories = "/categories",
   Places = "places",
-  AirQuality = "air-quality/",
+  AirQuality = "air",
+  Weather = "/weather",
 }
 
 export const queryKeys = {
@@ -22,7 +23,9 @@ export const queryKeys = {
 
 $apiPrivate.interceptors.request.use((config) => {
   const accessToken = localStorage.getItem("shaar-access-token");
-  config.headers.Authorization = `Bearer ${accessToken}`;
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
   return config;
 });
 
@@ -33,9 +36,8 @@ $apiPrivate.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if (
-      error.response.status == 401 &&
-      error.config &&
-      !error.config._isRetry
+      error.response.status === 401 &&
+      !originalRequest._isRetry
     ) {
       originalRequest._isRetry = true;
       try {
@@ -46,8 +48,11 @@ $apiPrivate.interceptors.response.use(
           }
         );
         localStorage.setItem("shaar-access-token", data.accessToken);
-        return $api.request(originalRequest);
-      } catch (e) { }
+        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+        return $apiPrivate.request(originalRequest);
+      } catch (e) {
+        console.error("Не удалось обновить токен", e);
+      }
     }
     throw error;
   }

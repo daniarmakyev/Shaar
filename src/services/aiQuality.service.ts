@@ -1,9 +1,13 @@
-import { $api, apiConfig } from "../constants/api";
+import { $apiPrivate, apiConfig } from "../constants/api";
 
-class AirQualityServce {
-  getInfo() {
-    return $api(apiConfig.AirQuality);
+class AirAndWeatherServce {
+  getWeather() {
+    return $apiPrivate(apiConfig.Weather);
+  }
+
+  getAir() {
+    return $apiPrivate(apiConfig.AirQuality);
   }
 }
 
-export default new AirQualityServce();
+export default new AirAndWeatherServce();
