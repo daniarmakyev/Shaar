@@ -39,7 +39,7 @@ const MainPage: FC = () => {
   ): Record<string, IPlace[]> => {
     if (!places) return {};
     return places.reduce((acc, place) => {
-      const category = place.Category;
+      const category = place.category;
       if (!acc[category]) {
         acc[category] = [];
       }
@@ -90,32 +90,32 @@ const MainPage: FC = () => {
                 <div className="mx-12">
                   {places.map((place) => (
                     <SwiperSlide
-                      key={place.ID}
+                      key={place.id}
                       className="min-w-32 max-w-[154px] w-full"
                     >
                       <Link
-                        to={`/map/${place.Latitude + "/" + place.Longitude}`}
+                        to={`/map/${place.latitude + "/" + place.longitude}`}
                       >
                         {" "}
                         <img
                           alt="place"
-                          src={`${place.ImageURL}`}
+                          src={`${place.imageUrl}`}
                           className="rounded-[25px] w-full h-32 sm:h-[157px] object-cover"
                         />
                         <span className="absolute flex gap-1  ps-2 pe-1 flex-nowrap top-2 bg-white  rounded-xl left-2 text-green-bg font-semibold">
-                          {place.Rating}
+                          {place.rating}
                           <img src={star} alt="rayting star" />
                         </span>
                         <div className="justify-center flex gap-2 text-green-white">
                           {" "}
                           <span className="text-sm font-semibold text-nowrap text-green-bg">
-                            {place.Name}
+                            {place.name}
                           </span>{" "}
                           <span className="text-sm font-medium">
                             {" "}
                             {category === "hotel"
-                              ? `${place.Price}/night`
-                              : `${place.Price}/dish`}
+                              ? `${place.price}/night`
+                              : `${place.price}/dish`}
                           </span>
                         </div>
                       </Link>

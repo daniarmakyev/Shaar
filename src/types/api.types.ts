@@ -15,14 +15,14 @@ export interface IRegisterBody extends Omit<IRegisterForm, "ava"> {
 export type Category = string;  // Категории могут быть строками
 
 export interface IPlace {
-  ID: number;
-  Name: string;
-  Price: number;
-  Rating: number;
-  Latitude: number;
-  Longitude: number;
-  ImageURL: string;
-  Category: string;
+  id: number;
+  name: string;
+  price: number;
+  rating: number;
+  latitude: number;
+  longitude: number;
+  imageUrl: string;
+  category: string;
 }
 export interface IPlacesParams {
   rating?: number; 
