@@ -4,10 +4,12 @@ import {
   Marker,
   StandaloneSearchBox,
   LoadScript,
-  DirectionsService,
   DirectionsRenderer,
 } from "@react-google-maps/api";
 import { useParams } from "react-router-dom";
+
+// Выносим libraries в константу
+const LIBRARIES: ("places")[] = ["places"];
 
 const MapPage = () => {
   const googleMapsApiKey = import.meta.env.VITE_MAP_KEY;
@@ -15,6 +17,7 @@ const MapPage = () => {
     latitude: string;
     longitude: string;
   }>();
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
@@ -28,6 +31,7 @@ const MapPage = () => {
 
   const defaultLocation = { lat: 42.840421654800046, lng: 74.60119790139834 };
 
+  // Инициализация координат
   useEffect(() => {
     if (latitude && longitude) {
       setSelectedMarker({
@@ -39,35 +43,40 @@ const MapPage = () => {
     }
   }, [latitude, longitude]);
 
+  // Запрос маршрута только после загрузки скрипта
   useEffect(() => {
-    if (selectedMarker) {
+    if (
+      isScriptLoaded && // Проверяем, что скрипт загружен
+      selectedMarker &&
+      (selectedMarker.lat !== defaultLocation.lat ||
+        selectedMarker.lng !== defaultLocation.lng)
+    ) {
       setLoading(true);
-      setTimeout(() => {
-        const directionsService = new google.maps.DirectionsService();
-        directionsService.route(
-          {
-            origin: defaultLocation, // Базовая точка A
-            destination: selectedMarker, // Целевая точка B
-            travelMode: google.maps.TravelMode.DRIVING,
-            drivingOptions: {
-              departureTime: new Date(),
-              trafficModel: google.maps.TrafficModel.BEST_GUESS,
-            },
+
+      const directionsService = new google.maps.DirectionsService();
+      directionsService.route(
+        {
+          origin: defaultLocation,
+          destination: selectedMarker,
+          travelMode: google.maps.TravelMode.DRIVING,
+          drivingOptions: {
+            departureTime: new Date(),
+            trafficModel: google.maps.TrafficModel.BEST_GUESS,
           },
-          (result, status) => {
-            setLoading(false);
-            if (status === google.maps.DirectionsStatus.OK) {
-              setDirections(result);
-              setRouteStatus("Маршрут построен успешно!");
-            } else {
-              console.error("Ошибка при построении маршрута:", status);
-              setRouteStatus("Не удалось построить маршрут.");
-            }
+        },
+        (result, status) => {
+          setLoading(false);
+          if (status === google.maps.DirectionsStatus.OK) {
+            setDirections(result);
+            setRouteStatus("Маршрут построен успешно!");
+          } else {
+            console.error("Ошибка при построении маршрута:", status);
+            setRouteStatus("Не удалось построить маршрут.");
           }
-        );
-      }, 300); // Задержка 0.3 секунды
+        }
+      );
     }
-  }, [selectedMarker]);
+  }, [selectedMarker, isScriptLoaded]);
 
   const MySearchBox: React.FC = () => {
     const handleSearchPlaces = () => {
@@ -106,39 +115,41 @@ const MapPage = () => {
   };
 
   return (
-    <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={["places"]}>
-      <GoogleMap
-        mapContainerStyle={{ width: "100%", height: "90vh" }}
-        center={defaultLocation}
-        zoom={16}
-        onLoad={(mapInstance) => setMap(mapInstance)}
-      >
-        <MySearchBox />
-
-        {/* Базовая метка (точка A) */}
-        {defaultLocation && <Marker position={defaultLocation} label="A" />}
-
-        {/* Целевая метка (точка B) */}
-        {selectedMarker && <Marker position={selectedMarker} label="B" />}
-
-        {loading && <div>Загружается маршрут...</div>}
-        {routeStatus && <div>{routeStatus}</div>}
-
-        {directions && (
-          <DirectionsRenderer
-            directions={directions}
-            options={{
-              suppressMarkers: true,
-              preserveViewport: true, 
-              polylineOptions: {
-                strokeColor: "#FF0000",
-                strokeWeight: 4,
-                strokeOpacity: 0.7,
-              },
-            }}
-          />
-        )}
-      </GoogleMap>
+    <LoadScript
+      googleMapsApiKey={googleMapsApiKey}
+      libraries={LIBRARIES} 
+      onLoad={() => setIsScriptLoaded(true)}
+    >
+      {isScriptLoaded ? (
+        <GoogleMap
+          mapContainerStyle={{ width: "100%", height: "90vh" }}
+          center={selectedMarker || defaultLocation}
+          zoom={16}
+          onLoad={(mapInstance) => setMap(mapInstance)}
+        >
+          <MySearchBox />
+          {defaultLocation && <Marker position={defaultLocation} label="A" />}
+          {selectedMarker && <Marker position={selectedMarker} label="B" />}
+          {loading && <div>Загружается маршрут...</div>}
+          {routeStatus && <div>{routeStatus}</div>}
+          {directions && (
+            <DirectionsRenderer
+              directions={directions}
+              options={{
+                suppressMarkers: true,
+                preserveViewport: true,
+                polylineOptions: {
+                  strokeColor: "#FF0000",
+                  strokeWeight: 4,
+                  strokeOpacity: 0.7,
+                },
+              }}
+            />
+          )}
+        </GoogleMap>
+      ) : (
+        <div>Загрузка карты...</div>
+      )}
     </LoadScript>
   );
 };

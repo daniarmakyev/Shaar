@@ -11,6 +11,17 @@
     "success": "Registration successful",
     "error": "An error occurred during registration"
   },
+  "profile_order": {
+    "success": "Обновление профиля успешно",
+    "error": "Произошла ошибка при обновлении профиля"
+  },
+  "car": {
+    "success": "Информация о транспортном средстве обновлена успешно",
+    "error": "Произошла ошибка при обновлении информации о транспортном средстве"
+  },
+  "s": "s",
+  "distance": "Distance",
+  "build_route": "Build a route",
   "welcome_image_alt": "Welcome image",
   "welcome_mobile_image_alt": "Welcome mobile image",
   "welcome_title": "Welcome",
@@ -89,5 +100,23 @@
   },
   "restaurant": "Restaurant",
   "hotel": "Hotel",
-  "cafe": "Cafe"
+  "cafe": "Cafe",
+  "address": "Address",
+  "car_model": "Car model",
+  "enter_car_model": "Enter your car model",
+  "year_of_manufacture": "Year of manufacture",
+  "enter_year": "Enter year",
+  "license_plate_number": "License plate number",
+  "enter_license_plate": "Enter license plate number",
+  "vin_code": "VIN code",
+  "enter_vin_code": "Enter VIN code",
+  "payment_type": "Payment",
+  "enter_payment": "Enter payment",
+  "first_name": "First Name",
+  "last_name": "Last Name",
+  "email": "Email",
+  "username": "Username",
+  "phone_number": "Phone Number",
+  "cancel": "Cancel",
+  "save": "Save"
 }

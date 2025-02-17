@@ -1,25 +1,158 @@
-import React, { useState, useEffect, useRef, FC } from "react";
+import React, { useState, useEffect, useRef, FC, useCallback } from "react";
 import {
   GoogleMap,
   LoadScript,
   DrawingManager,
   Marker,
-  Libraries,
   DirectionsRenderer,
   Polygon,
   MarkerClusterer,
 } from "@react-google-maps/api";
 import greenRound from "../../assets/images/greenRound.png";
+import { useTranslation } from "react-i18next";
 const googleMapsApiKey = import.meta.env.VITE_MAP_KEY;
+
+const maki = [
+  { lat: 42.825977, lng: 74.548159 },
+  { lat: 42.82601, lng: 74.548265 },
+  { lat: 42.826164, lng: 74.548044 },
+  { lat: 42.826288, lng: 74.54796 },
+  { lat: 42.82649, lng: 74.547778 },
+  { lat: 42.827805271089034, lng: 74.55088415973017 },
+  { lat: 42.82782494240816, lng: 74.55095657937358 },
+  { lat: 42.82784264659002, lng: 74.55102229349444 },
+  { lat: 42.827854449375096, lng: 74.55109068982432 },
+  { lat: 42.844948, lng: 74.584776 },
+  { lat: 42.844948, lng: 74.584827 },
+  { lat: 42.828458, lng: 74.584715 },
+  { lat: 42.828458, lng: 74.584824 },
+  { lat: 42.828455, lng: 74.584924 },
+  { lat: 42.828563, lng: 74.584916 },
+  { lat: 42.828574, lng: 74.584773 },
+  { lat: 42.828682, lng: 74.584769 },
+  { lat: 42.828673, lng: 74.584889 },
+  { lat: 42.844962, lng: 74.584647 },
+  { lat: 42.844949, lng: 74.584877 },
+  { lat: 42.840311, lng: 74.600385 },
+  { lat: 42.840265, lng: 74.600396 },
+  { lat: 42.840222, lng: 74.600396 },
+  { lat: 42.840179, lng: 74.600396 },
+  { lat: 42.84014, lng: 74.600399 },
+];
+
+const poly = [
+  [
+    { lat: 42.825880796248526, lng: 74.54850540479502 },
+    { lat: 42.82575292854091, lng: 74.54815403541407 },
+    { lat: 42.826642095432526, lng: 74.54756931384883 },
+    { lat: 42.82674438814841, lng: 74.5478160770782 },
+  ],
+  [
+    { lat: 42.82782199171068, lng: 74.55082112781832 },
+
+    { lat: 42.82769019374678, lng: 74.55092707507441 },
+
+    { lat: 42.82782494240816, lng: 74.55124625794718 },
+
+    { lat: 42.82789969336371, lng: 74.55111751191447 },
+  ],
+  [
+    {
+      lat: 42.84036168679825,
+      lng: 74.60034301103673,
+    },
+    {
+      lat: 42.84012076158662,
+      lng: 74.60038324417195,
+    },
+    {
+      lat: 42.84014042898606,
+      lng: 74.60046102823338,
+    },
+    {
+      lat: 42.84040790499677,
+      lng: 74.60041811288914,
+    },
+    {
+      lat: 42.84039872048276,
+      lng: 74.60033732824876,
+    },
+  ],
+  [
+    {
+      lat: 42.844991858077364,
+      lng: 74.58452597324803,
+    },
+    {
+      lat: 42.84494662660128,
+      lng: 74.58452463214353,
+    },
+    {
+      lat: 42.84492597743813,
+      lng: 74.58548486297086,
+    },
+    {
+      lat: 42.844976125393785,
+      lng: 74.58550497953847,
+    },
+  ],
+  [
+    {
+      lat: 42.82889705035056,
+      lng: 74.58470458076798,
+    },
+    {
+      lat: 42.82838953711723,
+      lng: 74.58467775867783,
+    },
+    {
+      lat: 42.828328556564585,
+      lng: 74.58508277223908,
+    },
+    {
+      lat: 42.82910359524088,
+      lng: 74.5850881366571,
+    },
+    {
+      lat: 42.82910359524088,
+      lng: 74.58470189855896,
+    },
+  ],
+];
+const clusterOptions = {
+  maxZoom: 18,
+  gridSize: 60,
+  styles: [
+    { height: 53, width: 53, textSize: 16 },
+    { height: 56, width: 56, textSize: 18 },
+    { height: 66, width: 66, textSize: 20 },
+  ].map((style) => ({
+    ...style,
+    url: `${greenRound}`,
+    textColor: "#FFFFFF",
+  })),
+};
+
+const mapStyles = { height: "90vh", width: "100%" };
+const defaultCenter = { lat: 42.8746, lng: 74.5698 };
+const mapOptions = {
+  styles: [
+    { featureType: "poi", stylers: [{ visibility: "off" }] },
+    { featureType: "poi.business", stylers: [{ visibility: "off" }] },
+    { featureType: "road", stylers: [{ visibility: "simplified" }] },
+  ],
+};
+
 const ParkingPage: FC = React.memo(() => {
-  const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
-  const [polygons, setPolygons] = useState<google.maps.LatLngLiteral[][]>([]);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [userLocation, setUserLocation] = useState<{
-    lat: 42.840480748627705;
-    lng: 74.60114410741835;
-  } | null>(null);
+  const { t } = useTranslation();
   const [markerClicked, setMarkerClicked] = useState(false);
+  const [markers, setMarkers] = useState<google.maps.LatLngLiteral[]>([]);
+  const [polygons, setPolygons] = useState<google.maps.LatLngLiteral[][]>([]);
+  const [userLocation, setUserLocation] =
+    useState<google.maps.LatLngLiteral | null>({
+      lat: 42.840480748627705,
+      lng: 74.60114410741835,
+    });
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
     lng: number;
@@ -29,387 +162,194 @@ const ParkingPage: FC = React.memo(() => {
   const [drawingMode, setDrawingMode] =
     useState<google.maps.drawing.OverlayType | null>(null);
   const [deleteMode, setDeleteMode] = useState(false);
-  const [distance, setDistance] = useState<number | null>(null);
-  const geocoder = useRef<google.maps.Geocoder | null>(null);
+  const [distance, setDistance] = useState<string | null>(null);
   const [controlsVisible, setControlsVisible] = useState(true);
+  const geocoder = useRef<google.maps.Geocoder | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markerClustererRef = useRef<MarkerClusterer | null>(null);
-
-  let userRole = "admin"; // ADMINKA
-  const center = { lat: 42.826434, lng: 74.548867 };
+  const userRole = "admin";
   const toggleControls = () => {
     setControlsVisible(!controlsVisible);
   };
 
-  const handleScriptLoad = () => {
+  const geocoderLoad = () => {
     geocoder.current = new google.maps.Geocoder();
   };
 
-  const maki = [
-    { lat: 42.825977, lng: 74.548159 },
-    { lat: 42.82601, lng: 74.548265 },
-    { lat: 42.826164, lng: 74.548044 },
-    { lat: 42.826288, lng: 74.54796 },
-    { lat: 42.82649, lng: 74.547778 },
-    { lat: 42.827805271089034, lng: 74.55088415973017 },
-    { lat: 42.82782494240816, lng: 74.55095657937358 },
-    { lat: 42.82784264659002, lng: 74.55102229349444 },
-    { lat: 42.827854449375096, lng: 74.55109068982432 },
-    { lat: 42.844948, lng: 74.584776 },
-    { lat: 42.844948, lng: 74.584827 },
-    { lat: 42.828458, lng: 74.584715 },
-    { lat: 42.828458, lng: 74.584824 },
-    { lat: 42.828455, lng: 74.584924 },
-    { lat: 42.828563, lng: 74.584916 },
-    { lat: 42.828574, lng: 74.584773 },
-    { lat: 42.828682, lng: 74.584769 },
-    { lat: 42.828673, lng: 74.584889 },
-    { lat: 42.844962, lng: 74.584647 },
-    { lat: 42.844949, lng: 74.584877 },
-    { lat: 42.840311, lng: 74.600385 },
-    { lat: 42.840265, lng: 74.600396 },
-    { lat: 42.840222, lng: 74.600396 },
-    { lat: 42.840179, lng: 74.600396 },
-    { lat: 42.84014, lng: 74.600399 },
-  ];
-
-  const poly = [
-    [
-      { lat: 42.825880796248526, lng: 74.54850540479502 },
-      { lat: 42.82575292854091, lng: 74.54815403541407 },
-      { lat: 42.826642095432526, lng: 74.54756931384883 },
-      { lat: 42.82674438814841, lng: 74.5478160770782 },
-    ],
-    [
-      { lat: 42.82782199171068, lng: 74.55082112781832 },
-
-      { lat: 42.82769019374678, lng: 74.55092707507441 },
-
-      { lat: 42.82782494240816, lng: 74.55124625794718 },
-
-      { lat: 42.82789969336371, lng: 74.55111751191447 },
-    ],
-    [
-      {
-        lat: 42.84036168679825,
-        lng: 74.60034301103673,
-      },
-      {
-        lat: 42.84012076158662,
-        lng: 74.60038324417195,
-      },
-      {
-        lat: 42.84014042898606,
-        lng: 74.60046102823338,
-      },
-      {
-        lat: 42.84040790499677,
-        lng: 74.60041811288914,
-      },
-      {
-        lat: 42.84039872048276,
-        lng: 74.60033732824876,
-      },
-    ],
-    [
-      {
-        lat: 42.844991858077364,
-        lng: 74.58452597324803,
-      },
-      {
-        lat: 42.84494662660128,
-        lng: 74.58452463214353,
-      },
-      {
-        lat: 42.84492597743813,
-        lng: 74.58548486297086,
-      },
-      {
-        lat: 42.844976125393785,
-        lng: 74.58550497953847,
-      },
-    ],
-    [
-      {
-        lat: 42.82889705035056,
-        lng: 74.58470458076798,
-      },
-      {
-        lat: 42.82838953711723,
-        lng: 74.58467775867783,
-      },
-      {
-        lat: 42.828328556564585,
-        lng: 74.58508277223908,
-      },
-      {
-        lat: 42.82910359524088,
-        lng: 74.5850881366571,
-      },
-      {
-        lat: 42.82910359524088,
-        lng: 74.58470189855896,
-      },
-    ],
-  ];
-
-  const handleOverlayComplete = (
-    event: google.maps.drawing.OverlayCompleteEvent
-  ) => {
-    if (event.type === "polygon") {
-      const polygon = event.overlay as google.maps.Polygon;
-      const path = polygon
-        .getPath()
-        .getArray()
-        .map((latLng) => ({
-          lat: latLng.lat(),
-          lng: latLng.lng(),
-        }));
-      console.log("Новый полигон:", path);
-      setPolygons((prev) => [...prev, path]);
-    }
-
-    if (event.type === "marker") {
-      const marker = event.overlay as google.maps.Marker;
-      const position = marker.getPosition();
-      if (position) {
-        const newMarker = { lat: position.lat(), lng: position.lng() };
-        setMarkers((prev) => [...prev, newMarker]);
-        console.log("Новый маркер:", newMarker);
+  const handleOverlayComplete = useCallback(
+    (event: google.maps.drawing.OverlayCompleteEvent) => {
+      if (event.type === "polygon") {
+        const path = (event.overlay as google.maps.Polygon)
+          .getPath()
+          .getArray()
+          .map(({ lat, lng }) => ({ lat: lat(), lng: lng() }));
+        setPolygons((prev) => [...prev, path]);
       }
-    }
-  };
+      if (event.type === "marker") {
+        const { lat, lng } = (event.overlay as google.maps.Marker)
+          .getPosition()!
+          .toJSON();
+        setMarkers((prev) => [...prev, { lat, lng }]);
+      }
+    },
+    []
+  );
 
-  const handleRoute = () => {
-    if (userLocation && selectedMarker) {
-      const directionsService = new google.maps.DirectionsService();
-      const request: google.maps.DirectionsRequest = {
-        origin: userLocation,
-        destination: selectedMarker,
-        travelMode: google.maps.TravelMode.DRIVING,
-      };
+  const handleClusterClick = useCallback((cluster: any) => {
+    const bounds = cluster.getBounds();
+    mapRef.current?.fitBounds(bounds, 180);
+  }, []);
 
-      directionsService.route(request, (result, status) => {
-        if (status === google.maps.DirectionsStatus.OK) {
-          setRoute(result);
+  const handleMarkerClick = useCallback(
+    (marker: google.maps.LatLngLiteral) => {
+      if (deleteMode) {
+        setMarkers((prev) =>
+          prev.filter((m) => m.lat !== marker.lat || m.lng !== marker.lng)
+        );
+      } else {
+        setSelectedMarker({ lat: marker.lat, lng: marker.lng, address: "" });
+        calculateDistance(marker);
+        getAddress(marker);
+      }
+      setMarkerClicked(true);
+    },
+    [deleteMode]
+  );
+
+  const calculateDistance = useCallback(
+    (marker: google.maps.LatLngLiteral) => {
+      if (!userLocation) return;
+
+      const service = new google.maps.DistanceMatrixService();
+      service.getDistanceMatrix(
+        {
+          origins: [userLocation],
+          destinations: [marker],
+          travelMode: google.maps.TravelMode.DRIVING,
+          unitSystem: google.maps.UnitSystem.METRIC,
+        },
+        (response, status) => {
+          if (status === google.maps.DistanceMatrixStatus.OK) {
+            const result = response!.rows[0].elements[0].distance;
+            console.log(result);
+            // @ts-ignore
+            if (response!.rows[0].elements[0].status === "OK") {
+              setDistance(result.text);
+            } else {
+              console.error("DistanceMatrix result not OK:", result);
+            }
+          } else {
+            console.error("Error:", status);
+          }
         }
-      });
-    }
-  };
+      );
+    },
+    [userLocation]
+  );
 
-  const handleMarkerClick = (marker: { lat: number; lng: number }) => {
-    if (deleteMode) {
-      handleDelete(marker.lat, marker.lng);
-    } else {
-      setSelectedMarker({ lat: marker.lat, lng: marker.lng, address: "" });
-      calculateDistance(marker);
-      fetchAddress(marker);
-    }
-    setMarkerClicked(true);
-  };
+  const getAddress = useCallback(async (marker: google.maps.LatLngLiteral) => {
+    if (!geocoder.current) return;
 
-  const handleDelete = (lat: number, lng: number) => {
-    setMarkers((prev) => prev.filter((m) => m.lat !== lat || m.lng !== lng));
-  };
-
-  const handlePolygonClick = (polygonIndex: number) => {
-    if (deleteMode) {
-      setPolygons((prev) => prev.filter((_, index) => index !== polygonIndex));
-    }
-  };
-  useEffect(() => {
-    if (navigator.geolocation) {
-      setUserLocation({ lat: 42.840480748627705, lng: 74.60114410741835 });
+    try {
+      const { results } = await geocoder.current.geocode({ location: marker });
+      setSelectedMarker((prev: any) => ({
+        ...prev,
+        address: results[0]?.formatted_address || "Адрес не найден",
+      }));
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      setSelectedMarker((prev: any) => ({
+        ...prev,
+        address: "Ошибка при получении адреса",
+      }));
     }
   }, []);
 
-  const calculateDistance = (marker: { lat: number; lng: number }) => {
-    if (userLocation) {
-      const distanceService = new google.maps.DistanceMatrixService();
-      const request: google.maps.DistanceMatrixRequest = {
-        origins: [userLocation],
-        destinations: [marker],
+  const handleRoute = useCallback(() => {
+    if (!userLocation || !selectedMarker) return;
+
+    new google.maps.DirectionsService().route(
+      {
+        origin: userLocation,
+        destination: selectedMarker,
         travelMode: google.maps.TravelMode.DRIVING,
-      };
-
-      distanceService.getDistanceMatrix(request, (response, status) => {
-        if (status === google.maps.DistanceMatrixStatus.OK && response) {
-          const distanceInMeters = response.rows[0].elements[0].distance.value;
-          const distanceInKm = distanceInMeters / 1000;
-          const roundedDistance = distanceInKm.toFixed(1);
-          setDistance(Number(roundedDistance));
-          console.log(`Расстояние: ${roundedDistance} км`);
-        } else {
-          console.error("Ошибка при получении расстояния");
-        }
-      });
-    }
-  };
-  const clusterOptions = {
-    imagePath: greenRound,
-    maxZoom: 17,
-    gridSize: 60,
-    styles: [
-      {
-        url: greenRound,
-        height: 53,
-        width: 53,
-        textColor: "#FFFFFF",
-        textSize: 16,
       },
-      {
-        url: greenRound,
-        height: 56,
-        width: 56,
-        textColor: "#FFFFFF",
-        textSize: 18,
-      },
-      {
-        url: greenRound,
-        height: 66,
-        width: 66,
-        textColor: "#FFFFFF",
-        textSize: 20,
-      },
-    ],
-  };
-
-  const fetchAddress = (marker: { lat: number; lng: number }) => {
-    if (geocoder.current) {
-      const { lat, lng } = marker;
-      const latLng = new google.maps.LatLng(lat, lng);
-      geocoder.current.geocode({ location: latLng }, (results, status) => {
-        if (status === google.maps.GeocoderStatus.OK && results?.[0]) {
-          const address = results[0].formatted_address;
-          setSelectedMarker((prev) => ({
-            ...prev!,
-            address: address || "Адрес не найден",
-          }));
-        } else {
-          console.error("Не удалось получить адрес.");
-        }
-      });
-    }
-  };
-
-  const mapStyles = {
-    height: "90vh",
-    width: "100%",
-  };
-
-  const defaultCenter = {
-    lat: 42.8746,
-    lng: 74.5698,
-  };
-
-  const libraries: Libraries = ["drawing"];
-  const libraries2: Libraries = ["geometry"];
-  const mapOptions = {
-    styles: [
-      {
-        featureType: "poi",
-        elementType: "labels",
-        stylers: [{ visibility: "off" }],
-      },
-      {
-        featureType: "poi.business",
-        elementType: "geometry",
-        stylers: [{ visibility: "off" }],
-      },
-      {
-        featureType: "road",
-        elementType: "geometry",
-        stylers: [{ visibility: "simplified" }],
-      },
-    ],
-  };
+      (result) => setRoute(result)
+    );
+  }, [userLocation, selectedMarker]);
 
   return (
-    <div className="App">
-      <LoadScript
-        googleMapsApiKey={googleMapsApiKey}
-        libraries={[...libraries, ...libraries2]}
-        onLoad={handleScriptLoad}
+    <LoadScript
+      googleMapsApiKey={googleMapsApiKey}
+      libraries={["drawing", "geometry"]}
+      onLoad={geocoderLoad}
+      onError={(error) =>
+        console.error("Ошибка загрузки Google Maps API:", error)
+      }
+    >
+      <GoogleMap
+        mapContainerStyle={mapStyles}
+        center={userLocation || defaultCenter}
+        zoom={16}
+        options={mapOptions}
+        onLoad={(map) => {
+          mapRef.current = map;
+        }}
       >
-        <GoogleMap
-          mapContainerStyle={mapStyles}
-          center={
-            userLocation || { lat: 42.840480748627705, lng: 74.60114410741835 }
-          }
-          zoom={16}
-          onLoad={(map) => {
-            mapRef.current = map;
-            setMapLoaded(true);
-          }}
-          onClick={(e) => {
-            if (deleteMode) {
-              const lat = e.latLng?.lat();
-              const lng = e.latLng?.lng();
-              if (lat && lng) handleDelete(lat, lng);
+        {route && (
+          <DirectionsRenderer
+            directions={route}
+            options={{ suppressMarkers: true }}
+          />
+        )}
+
+        <MarkerClusterer onClick={handleClusterClick} options={clusterOptions}>
+          {(clusterer) => (
+            <>
+              {maki.map((marker, i) => (
+                <Marker
+                  key={i}
+                  position={marker}
+                  clusterer={clusterer}
+                  onClick={() => handleMarkerClick(marker)}
+                />
+              ))}
+            </>
+          )}
+        </MarkerClusterer>
+
+        {poly.map((paths, i) => (
+          <Polygon
+            key={i}
+            paths={paths}
+            options={{
+              fillColor: "#00ff73",
+              fillOpacity: 0.4,
+              strokeColor: "#00cb5f",
+              strokeWeight: 2,
+            }}
+            onClick={() =>
+              deleteMode &&
+              setPolygons((prev) => prev.filter((_, idx) => idx !== i))
             }
-          }}
-          options={mapOptions}
-        >
-          {route && (
-            <DirectionsRenderer
-              directions={route}
-              options={{
-                suppressMarkers: true,
-              }}
-            />
-          )}
-          {mapLoaded && userLocation && <Marker position={userLocation} />}
-          {mapLoaded && (
-            <MarkerClusterer options={clusterOptions}>
-              {(clusterer) => (
-                <>
-                  {maki.map((marker, index) => (
-                    <Marker
-                      key={index}
-                      position={marker}
-                      clusterer={clusterer}
-                      onClick={() => handleMarkerClick(marker)}
-                    />
-                  ))}
-                </>
-              )}
-            </MarkerClusterer>
-          )}
+          />
+        ))}
 
-          {poly.map((polygon, index) => (
-            <Polygon
-              key={index}
-              paths={polygon}
-              options={{
-                fillColor: "#00ff73",
-                fillOpacity: 0.4,
-                strokeColor: "#00cb5f",
-                strokeOpacity: 1,
-                strokeWeight: 2,
-              }}
-              onClick={() => {
-                if (deleteMode) handlePolygonClick(index);
-              }}
-            />
-          ))}
-
-          {drawingMode && (
-            <DrawingManager
-              onOverlayComplete={handleOverlayComplete}
-              drawingMode={drawingMode}
-              options={{
-                drawingControlOptions: {
-                  position: google.maps.ControlPosition.TOP_LEFT,
-                  drawingModes: [
-                    google.maps.drawing.OverlayType.MARKER,
-                    google.maps.drawing.OverlayType.POLYGON,
-                  ],
-                },
-              }}
-            />
-          )}
-        </GoogleMap>
-      </LoadScript>
+        {drawingMode && (
+          <DrawingManager
+            onOverlayComplete={handleOverlayComplete}
+            drawingMode={drawingMode}
+            options={{
+              drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_LEFT,
+                drawingModes: [
+                  google.maps.drawing.OverlayType.MARKER,
+                  google.maps.drawing.OverlayType.POLYGON,
+                ],
+              },
+            }}
+          />
+        )}
+      </GoogleMap>
       {userRole === "admin" && (
         <div className="top-20 absolute bg-green-white rounded-xl">
           <button
@@ -461,12 +401,12 @@ const ParkingPage: FC = React.memo(() => {
         <div className="text-green-white rounded-2xl absolute bottom-24 bg-white max-w-md left-0 right-0 mx-auto mt-4 text-center pb-4 !shadow-[1px_1px_20px_rgba(0,0,0,0.3)] hover:!shadow-[1px_1px_10px_rgba(0,0,0,0.3)]">
           {selectedMarker && selectedMarker.address && (
             <div className="mt-2 text-center font-semibold">
-              Address: {selectedMarker.address}
+              <span className="text-green">{`${t("address")}`}</span>: {selectedMarker.address}
             </div>
           )}
           {distance !== null && (
             <div className="mt-2 text-center text-green-white font-semibold flex justify-center items-center">
-              Distance:{" "}
+              <span className="text-green font-bold">{`${t("distance")}`}</span>
               <svg
                 width="11"
                 height="13"
@@ -480,8 +420,8 @@ const ParkingPage: FC = React.memo(() => {
                   fill="#159559"
                 />
               </svg>
-              {distance} км
-              <span className="ms-1"> 100 som/hour</span>
+              {distance}
+              <span className="ms-1"><span className="text-green font-bold">{`${t("price")}`}:</span> 100 som/hour</span>
             </div>
           )}
 
@@ -490,7 +430,7 @@ const ParkingPage: FC = React.memo(() => {
               onClick={handleRoute}
               className="bg-green-500 text-white font-semibold px-5 py-2 rounded-xl mt-4 bg-green-white"
             >
-              Build a route
+              {`${t("build_route")}`}
             </button>
             {/* <button className="bg-green-500 text-white font-semibold px-12 py-2 rounded-xl mt-4 bg-green-white">
               Book
@@ -498,7 +438,7 @@ const ParkingPage: FC = React.memo(() => {
           </div>
         </div>
       )}
-    </div>
+    </LoadScript>
   );
 });
 

@@ -60,7 +60,7 @@ export default {
         comfortaa: "Comfortaa",
       },
       screens: {
-        gtbdf: { max: "1200px" },
+        gtbdf: { max: "639px" },
         btbdf: { max: "1110px" },
         tbdf: { max: "768px" },
         mb: { min: "412px" },

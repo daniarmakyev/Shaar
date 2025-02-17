@@ -12,7 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           {routes.map((route) => (
-            <Route key={route.path} {...route} />
+            <Route key={route.path} {...route}/>
           ))}
         </Route>
         <Route path="/" element={<MapLayout />}>
@@ -24,6 +24,7 @@ function App() {
           <Route key={route.path} {...route} />
         ))}
       </Routes>
+      
     </div>
   );
 }

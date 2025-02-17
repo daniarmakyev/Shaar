@@ -49,7 +49,11 @@ const MainPage: FC = () => {
   };
 
   const allPlaces = data ? groupPlacesByCategory(data) : {};
+  function ucFirst(str: string) {
+    if (!str) return str;
 
+    return str[0].toUpperCase() + str.slice(1);
+  }
   useEffect(() => {
     if (buildingsFilter !== localFilter) {
       refetch();
@@ -75,7 +79,7 @@ const MainPage: FC = () => {
               className="sm:container mt-[15px] mb-[19px] relative"
             >
               <h3 className="text-[#237B52] font-bold sm:text-[32px] text-[30px] md:text-[36px]">
-                {t("category")}: {category}
+                {ucFirst(category)}
               </h3>
               <Swiper
                 slidesPerView="auto"
@@ -108,14 +112,14 @@ const MainPage: FC = () => {
                         </span>
                         <div className="justify-center flex gap-2 text-green-white">
                           {" "}
-                          <span className="text-sm font-semibold text-nowrap text-green-bg">
+                          <span className="text-sm font-semibold text-nowrap text-green-bg" style={{fontSize:"13px"}}>
                             {place.name}
                           </span>{" "}
-                          <span className="text-sm font-medium">
+                          <span className="font-medium" style={{fontSize:"13px"}}>
                             {" "}
                             {category === "hotel"
-                              ? `${place.price}/night`
-                              : `${place.price}/dish`}
+                              ? `${place.price}${t("s")}/${t("nigth")}`
+                              : `${place.price}${t("s")}/${t("dish")}`}
                           </span>
                         </div>
                       </Link>

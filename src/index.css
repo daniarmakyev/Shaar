@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @font-face {
   font-family: "chillax";
   src: url("./assets/fonts/Chillax-Variable.ttf");
@@ -31,6 +29,20 @@
   .scroll-none::-webkit-scrollbar {
     @apply w-[0px];
   }
+  .scrollbar-visible::-webkit-scrollbar {
+    width: 8px; 
+    height: 8px; 
+  }
+  
+  .scrollbar-visible::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5); 
+    border-radius: 10px;
+  }
+  
+  .scrollbar-visible::-webkit-scrollbar-track {
+    background-color: #f1f1f1; 
+  }
+  
   .shadow-hidden {
     @apply !shadow-none hover:!shadow-none;
   }
@@ -41,6 +53,6 @@
     @apply mx-auto px-10 max-w-[1410px];
   }
   .btn {
-    @apply rounded-[19px] py-20 px-50 bg-green-white text-white text-[32px] animate-def clickable  disabled:pointer-events-none disabled:bg-[#D4D4D4] gtbdf:text-[20px] gtbdf:py-[19px] gtbdf:px-60;
+    @apply rounded-[19px] py-20 px-50 bg-green-white text-white text-[32px] animate-def clickable disabled:pointer-events-none disabled:bg-[#D4D4D4] gtbdf:text-[20px] gtbdf:py-[19px] gtbdf:px-60;
   }
 }

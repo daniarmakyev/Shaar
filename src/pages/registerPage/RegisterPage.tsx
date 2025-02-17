@@ -19,12 +19,7 @@ import { urlToFile } from "../../constants/helpers";
 
 const RegisterPage: FC = () => {
   const navigate = useNavigate();
-  const {
-    watch,
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<IRegisterForm>({ mode: "onTouched" });
+  const { watch, register, handleSubmit, formState: { errors, isValid },} = useForm<IRegisterForm>({ mode: "onTouched" });
   const { t } = useTranslation();
   const [_, setNotification] = useAtom(notificationAtom);
   const [isAuth] = useAtom(isAuthAtom);
@@ -63,14 +58,14 @@ const RegisterPage: FC = () => {
     email,
     username,
     password,
-    ava,
+    // ava,
   }) => {
     const defaultAvaFile = await urlToFile(avaDefaultImage, "ava-default.png");
     const form = new FormData();
     form.append("email", email);
     form.append("username", username);
     form.append("password", password);
-    form.append("ava", ava[0] || defaultAvaFile);
+    // form.append("ava", ava[0] || defaultAvaFile);
     registerUser(form);
   };
 
@@ -98,19 +93,19 @@ const RegisterPage: FC = () => {
                 htmlFor="ava"
                 className=" overflow-hidden   md:mb-70  h-[350px] lg:max-h-none md:max-w-72 md:max-h-72 lg:max-w-none w-full sm:max-w-36  max-h-36"
               >
-                {watch("ava")?.[0] ? (
+                {/* {watch("ava")?.[0] ? (
                   <img
                     alt="ava"
                     src={URL.createObjectURL(watch("ava")[0])}
                     className="w-full h-full object-cover rounded-circle max-w-32 max-h-32 mx-auto sm:max-w-36 sm:max-h-36 md:max-w-60 md:max-h-60 lg:max-w-none lg:max-h-none"
                   />
-                ) : (
+                ) : ( */}
                   <img
                     src={cameraIcon}
                     alt="camera"
                     className="max-w-32  md:max-w-72 md:w-56 lg:max-w-none sm:max-w-36 bg-white rounded-full lg:w-80 mx-auto"
                   />
-                )}
+                {/* )} */}
                 <input
                   id="ava"
                   type="file"

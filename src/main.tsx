@@ -9,6 +9,7 @@ import { notificationAtom } from "./store/store.ts";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import "./index.css";
 
+
 const store = getDefaultStore();
 const googleMapsApiKey = import.meta.env.VITE_MAP_KEY;
 const queryClient = new QueryClient({
@@ -28,13 +29,13 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
       <MotionConfig transition={{ ease: "anticipate", duration: 0.7 }}>
-        <APIProvider apiKey={googleMapsApiKey}>
+
           <App />
-        </APIProvider>
+
       </MotionConfig>
-    </QueryClientProvider>
-  </BrowserRouter>
+    </BrowserRouter>
+  </QueryClientProvider>
 );
