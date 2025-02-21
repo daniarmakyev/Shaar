@@ -7,7 +7,7 @@ import MapLayout from "./layouts/mapLayout/MapLayout";
 
 function App() {
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-x-hidden overflow-y-auto">
       <Notification />
       <Routes>
         <Route path="/" element={<MainLayout />}>

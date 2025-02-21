@@ -93,7 +93,7 @@ const ProfilePage: FC = () => {
     <div className="relative ">
       <Notification />
       <div className="bg-green-white h-32 w-full"></div>
-      <div className="bg-white max-w-[1320px] w-[90%] h-[80vh]  shadow-[0px_0px_20px_-3px_#636363] flex flex-col sm:flex-row flex-nowrap rounded-3xl absolute  left-1/2 transform -translate-x-1/2 top-1/3 px-20 md:px-28 pb-16 md:pb-20 pt-10 md:pt-12 gap-3">
+      <div className="bg-white max-w-[1320px] w-[90%] min-h-[80vh]  shadow-[0px_0px_20px_-3px_#636363] flex flex-col sm:flex-row flex-nowrap rounded-3xl absolute  left-1/2 transform -translate-x-1/2 top-1/3 px-20 md:px-28 pb-16 md:pb-20 pt-10 md:pt-12 gap-3">
         {isEdit ? (
           ""
         ) : (
@@ -111,7 +111,7 @@ const ProfilePage: FC = () => {
             </div>
           </div>
         )}
-        <div className="flex flex-col overflow-scroll">
+        <div className="flex flex-col ">
           <button onClick={() => setEdit(!isEdit)}>
             <img
               src={edit}
@@ -121,7 +121,7 @@ const ProfilePage: FC = () => {
           </button>
         </div>
         {isEdit ? (
-          <form className="w-full scrollbar-visible p-3 overflow-auto flex-col  bg-white rounded-lg ">
+          <form className="w-full scrollbar-visible p-3  flex-col  bg-white rounded-lg ">
             <ul className="flex flex-col gap-10">
               <li>
                 <label htmlFor="ava" className=" overflow-hidden">
@@ -266,7 +266,7 @@ const ProfilePage: FC = () => {
         {isEdit ? (
           ""
         ) : (
-          <form className="sm:w-[69%] scrollbar-visible overflow-auto flex-col p-4 bg-white rounded-lg ">
+          <form className="sm:w-[69%] scrollbar-visible  flex-col p-4 bg-white rounded-lg ">
             <ul className="flex flex-col gap-4">
               <li className="flex flex-col">
                 <label

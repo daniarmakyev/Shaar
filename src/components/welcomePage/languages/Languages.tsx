@@ -30,7 +30,7 @@ const Languages: FC<Props> = ({ isActive, setLanguageSetted }) => {
   return (
     <motion.div
       className={clsx(
-        "relative h-screen bg-cover text-white flex justify-center items-center flex-col pointer-events-none",
+        "relative min-h-screen bg-cover text-white flex justify-center items-center flex-col pointer-events-none",
         { "pointer-events-auto": isActive }
       )}
       style={{ backgroundImage: `url(${backgroundImage})` }}
@@ -47,7 +47,7 @@ const Languages: FC<Props> = ({ isActive, setLanguageSetted }) => {
           times: [0, 0.7],
           ease: "anticipate",
         }}
-        className="absolute font-bold [text-shadow:_1px_1px_9px_rgba(0,0,0,0.5)] btbdf:!text-[40px]"
+        className="absolute font-bold [text-shadow:_1px_1px_9px_rgba(0,0,0,0.5)] btbdf:!text-[30px]"
       >
         Hello!
       </motion.h2>
@@ -57,7 +57,7 @@ const Languages: FC<Props> = ({ isActive, setLanguageSetted }) => {
         animate={{ opacity: 1, y: "0%" }}
         transition={{ delay: 1.65, duration: 0.3 }}
       >
-        <h2 className="text-[96px] font-bold [text-shadow:_1px_1px_9px_rgba(0,0,0,0.5)] text-center btbdf:text-[64px]">
+        <h2 className="text-[40px] sm:text-[50px] md:text-[66px] font-bold [text-shadow:_1px_1px_9px_rgba(0,0,0,0.5)] text-center">
           Choose a language
         </h2>
         <div className="mt-90 flex flex-wrap justify-center gap-x-[95px] gap-y-[78px] btbdf:flex-col btbdf:items-center btbdf:gap-y-[23px]">

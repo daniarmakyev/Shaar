@@ -37,24 +37,24 @@ const Input = forwardRef<HTMLInputElement, Props>(
     return (
       <div
         className={clsx(
-          "relative rounded-[40px] py-[12px] px-[18px] flex gap-3 items-center bg-green-white shadow-[1px_1px_7px_black] md:max-w-md lg:max-w-none md:h-20 lg:h-auto max-h-16 md:max-h-none max-w-80",
+          "relative rounded-[40px] flex gap-3 items-center bg-green-white shadow-[1px_1px_7px_black] ",
           className
         )}
       >
         <img
           src={icon}
           alt="input"
-          className="w-[75px] h-[75px] max-w-10 lg:max-h-none md:max-w-none lg:max-w-none md:h-20 lg:h-auto max-h-16 md:max-h-none"
+          className="max-h-11 p-2"
         />
         <input
           ref={ref}
           placeholder={placeholder}
           className={clsx(
-            "text-18 md:text-[24px] me-auto !bg-transparent",
+            "!bg-transparent",
             isLoginPage ? "placeholder-[#3e3e3e]" : "placeholder-[#e1e1e1]",
             isPassword
-              ? "max-w-[60%] md:max-w-[60%]"
-              : "max-w-60 md:max-w-[400px]",
+              ? ""
+              : " ",
             inputClassName && `!${inputClassName}`
           )}
           type={isPassword ? (isPasswordHidden ? "text" : "password") : type}
@@ -74,14 +74,14 @@ const Input = forwardRef<HTMLInputElement, Props>(
           >
             <img
               src={passwordHiddenIcon}
-              alt=""
-              className="max-w-6 md:max-w-8"
+              alt="password button"
+              className="max-h-9 max-w-7"
             />
           </button>
         )}
 
         {error && (
-          <span className="absolute text-[#ff3535] text-sm bottom-[-30px] inline-block">
+          <span className="absolute text-[#ff3535] text-xs md:text-sm bottom-[-25px] inline-block">
             <span style={{ WebkitTextStroke: "1px #e80808" }}>
               {error.message}
             </span>

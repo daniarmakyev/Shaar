@@ -12,7 +12,7 @@ import qrNavbar from "../../assets/images/icons/qrScan.svg";
 import mapNavbar from "../../assets/images/icons/map-navbar.svg";
 import parkingNav from "../../assets/images/icons/park-navbar.svg";
 import { useTranslation } from "react-i18next";
-
+import profileIcon from "../../assets/images/icons/profile2.svg";
 const Header: FC = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   const location = useLocation();
@@ -61,7 +61,7 @@ const Header: FC = () => {
 
   const { t } = useTranslation();
   return (
-    <header className="py-[16px] bg-green-bg text-white sm:font-comfortaa flex sm:block">
+    <header className="py-[16px] bg-green-bg text-white sm:font-comfortaa flex sm:block  ">
       <nav className="container sm:flex justify-between items-center hidden">
         <div className="flex sm:gap-4 md:gap-14 lg:gap-20 items-center flex-grow justify-center sm:ml-0 ml-[150px]">
           <Link to="/">
@@ -84,9 +84,9 @@ const Header: FC = () => {
           </ul>
         </div>
 
-        <ul className="flex items-center capitalize font-bold  ml-auto ">
+        <ul className="flex  capitalize font-bold  ms-auto text-xs md:text-sm  gap-1  max-w-fit justify-end">
           {/* дроп ДАУН */}
-          <div className="relativ me-4">
+          <div className="relativ me-2">
             <img
               src={selectedImage}
               alt="Selected"
@@ -94,7 +94,7 @@ const Header: FC = () => {
               onClick={() => setIsDropdownOpen((prev) => !prev)}
             />
             {isDropdownOpen && (
-              <div className="absolute bg-white border border-gray-300 rounded shadow-md mt-2 w-32 z-10 border-green text-black">
+              <div className="absolute  bg-white border border-gray-300 rounded shadow-md mt-2 w-32 z-10 border-green text-black">
                 <div
                   className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
                   onClick={() => handleOptionClick(ruIcon, "ru")}
@@ -122,16 +122,20 @@ const Header: FC = () => {
           {routes
             .filter((route) => route.icon)
             .map(({ path, label, icon }, key) => (
-              <Fragment key={path}>
+              <section key={path} className="flex flex-wrap ">
                 {!!key && (
-                  <div className="mx-[14px]  self-stretch bg-white"></div>
+                  <div className="mx-[8px]  self-stretch bg-white"></div>
                 )}
                 <li key={path} className="flex gap-[3px] items-center">
-                  <img src={icon} alt="nav" className="w-[26px] h-[26px]" />
+                  <img src={icon} alt="nav" className="w-[17px] h-[17px] md:w-[20px] md:h-[20px]" />
 
                   <NavLink to={path}>{t(String(label))}</NavLink>
                 </li>
-              </Fragment>
+                <li className="flex gap-[3px] items-center">
+                  <img src={profileIcon} alt="nav" className="sm:w-[17px] sm:h-[17px] md:w-[20px] md:h-[20px]" />
+                  <NavLink to={"/profile"}>{t("profile")}</NavLink>
+                </li>
+              </section>
             ))}
         </ul>
       </nav>

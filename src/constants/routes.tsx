@@ -7,7 +7,7 @@ import ProfilePage from "../pages/profilePage/ProfilePage";
 import RegisterPage from "../pages/registerPage/RegisterPage";
 import WelcomePage from "../pages/welcomePage/WelcomePage";
 import favouritesIcon from "../assets/images/icons/favourites.svg";
-import profileIcon from "../assets/images/icons/profile2.svg";
+
 import BuildingsPage from "../pages/buildingsPage/BuildingsPage";
 import CalendarPage from "../pages/calendarPage/CalendarPage";
 import ToursPage from "../pages/toursPage/ToursPage";
@@ -21,11 +21,6 @@ export const routes = [
     element: <FavouritesPage />,
     label: "bookmark",
     icon: favouritesIcon,
-  },
-  {
-    label: "profile",
-    icon: profileIcon,
-    
   },
 ];
 

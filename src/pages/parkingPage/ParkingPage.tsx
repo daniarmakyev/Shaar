@@ -133,7 +133,7 @@ const clusterOptions = {
   })),
 };
 
-const mapStyles = { height: "90vh", width: "100%" };
+const mapStyles = { height: "90vh", width: "100%",  };
 const defaultCenter = { lat: 42.8746, lng: 74.5698 };
 const mapOptions = {
   styles: [

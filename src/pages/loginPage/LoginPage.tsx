@@ -63,19 +63,23 @@ const LoginPage: FC = () => {
   if (isAuth) return <Navigate to="/" />;
 
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen overflow-x-hidden flex-col md:flex-row">
       <div
-        className="m-0 hidden md:block md:pt-70 md:px-60 md:m-none md:flex-[0_1_810px]"
+        className="m-0 hidden md:block md:pt-70 md:px-60 md:m-none md:w-[50vw]  w-auto bg-cover bg-center"
         style={{ backgroundImage: `url(${bannerImage})` }}
       >
         <button onClick={() => navigate(-1)}>
-          <img src={arrowIcon} alt="arrow" />
+          <img
+            src={arrowIcon}
+            alt="arrow"
+            className="max-w-10 absolute top-[5%] left-5"
+          />
         </button>
       </div>
 
       <div
         style={{ backgroundImage: `url(${bgImage})` }}
-        className="pl-1 pr-1 md:pl-[67px] bg-cover flex-auto text-white text-center"
+        className="pl-1 pr-1 md:pl-[67px] bg-contain h-auto md:h-screen flex-auto text-white text-center flex flex-col items-center justify-center gap-y-9"
       >
         <button
           onClick={() => navigate(-1)}
@@ -94,8 +98,8 @@ const LoginPage: FC = () => {
             />
           </svg>
         </button>
-        <div className="mx-auto max-w-[520px] flex flex-col items-center mt-48 md:mt-20">
-          <h1 className="text-nowrap mt-20 md:mt-0 sm:mt-20 text-[60px] sm:text-[80px] md:text-[100px] lg:text-[118px] font-bold [text-shadow:_1px_1px_8px_black] uppercase">
+        <div className="mx-auto  md:w-[50vw] mt-9 md:mt-0  flex flex-col items-center justify-center gap-y-9">
+          <h1 className="text-nowrap text-xl sm:text-[30px] md:text-[40px] lg:text-[50px] font-bold [text-shadow:_1px_1px_8px_black] uppercase">
             {t("sign_in")}
           </h1>
           <Input
@@ -103,7 +107,7 @@ const LoginPage: FC = () => {
             type="email"
             placeholder={t("email_placeholder")}
             error={errors.email}
-            className="mt-[60px] md:mt-[133px] mb-40 bg-white placeholder-black-bg"
+            className=" bg-white placeholder-black-bg "
             {...register("email", {
               required: t("field_required"),
               pattern: {
@@ -115,7 +119,7 @@ const LoginPage: FC = () => {
           <Input
             isPassword
             icon={passwordIcon}
-            className="mb-4 mt-10 md:mt-40 md:mb-30 bg-white min-w-[320px]"
+            className=" bg-white "
             inputClassName="!text-black"
             placeholder={t("password_placeholder")}
             error={errors.password}
@@ -127,11 +131,11 @@ const LoginPage: FC = () => {
           <button
             disabled={!isValid || isPending}
             onClick={handleSubmit(loginFunc)}
-            className="btn py-2 mt-[40px] sm:mt-[100px] md:mt-[100px] mb-[27px] rounded-[43px] sm:px-[50px] md:px-[102px] md:py-[18px] bg-white text-green-white font-bold text-24 md:text-[40px]"
+            className="btn text-green-bg bg-white px-4 py-1 rounded-xl font-bold"
           >
             {t("sign_in")}
           </button>
-          <span className="block text-[24px] max-w-72 mx-auto">
+          <span className="hidden md:block     md:max-w-72 bg-cover bg-center">
             {t("dont_have_account")}{" "}
             <Link to="/register" className="text-green-black font-bold">
               {t("sign_up")}
@@ -139,6 +143,15 @@ const LoginPage: FC = () => {
           </span>
         </div>
       </div>
+      <span
+        className="items-center justify-center md:hidden text-white flex  md:max-w-72  bg-cover bg-center"
+        style={{ backgroundImage: `url(${bgImage})` }}
+      >
+        {t("dont_have_account")}{" "}
+        <Link to="/register" className="text-green-black font-bold">
+          {t("sign_up")}
+        </Link>
+      </span>
     </div>
   );
 };

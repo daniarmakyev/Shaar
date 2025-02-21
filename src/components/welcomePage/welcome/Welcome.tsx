@@ -22,7 +22,7 @@ const Welcome: FC<Props> = ({ isActive }) => {
   return (
     <div
       className={clsx(
-        "fixed top-0 bottom-0 left-0 right-0 flex flex-nowrap w-[100vw] justify-center gap-[35px] h-screen overflow-hidden scroll-none pointer-events-none gtbdf:flex-col gtbdf:gap-0",
+        "fixed top-0 bottom-0 left-0 right-0 flex flex-nowrap w-[100vw] justify-center gap-[35px] min-h-screen overflow-x-auto md:overflow-hidden scroll-none pointer-events-none gtbdf:flex-col gtbdf:gap-0",
         { "pointer-events-auto": isActive }
       )}
     >
@@ -57,9 +57,9 @@ const Welcome: FC<Props> = ({ isActive }) => {
         animate={{ opacity: isActive ? 1 : 0, y: isActive ? "0%" : "10%" }}
         className="sm:w-[50vw]  flex-auto text-center  gtbdf:flex-initial gtbdf:gap-[56px] gtbdf:bg-green-bg"
       >
-        <div className="max-w-[900px] self-center h-[50vh] sm:h-[100vh]  px-3 me-auto pb-40 flex flex-col justify-center gap-10 lg:gap-[56px] gtbdf:rounded-[80px_0px_0px_0px] gtbdf:pt-[42px] gtbdf:px-[18px] gtbdf:bg-white">
+        <div className="max-w-[900px] self-center h-[50vh] sm:h-[100vh]  px-3 me-auto pb-40 flex flex-col sm:justify-center gap-10 lg:gap-[56px] gtbdf:rounded-[80px_0px_0px_0px] gtbdf:pt-[42px] gtbdf:px-[18px] gtbdf:bg-white">
           <div className="">
-            <h1 className="text-3xl sm:text-3xl md:text-5xl sm:text-left lg:text-6xl font-bold text-green gtbdf:text-[50px]">
+            <h1 className="text-3xl sm:text-3xl md:text-5xl sm:text-left lg:text-6xl font-bold text-green ">
               {t("welcome_title")}
             </h1>
             <span className="text-24 sm:text-[28px] sm:text-left md:text-[28px] lg:text-[30px] max-w-[500px] block gtbdf:text-[20px]">

@@ -8,7 +8,7 @@ const MapLayout: FC = () => {
   return (
     <>
       <Header />
-      <main className="relative min-h-[calc(100vh-61px)] bg-gray-bg">
+      <main className="relative min-h-[calc(100vh-80px)] bg-gray-bg">
 
         <Outlet />
       </main>
