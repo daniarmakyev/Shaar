@@ -51,8 +51,10 @@ $apiPrivate.interceptors.response.use(
         localStorage.setItem("shaar-access-token", data.accessToken);
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return $apiPrivate.request(originalRequest);
-      } catch (e) {
-        console.error("Не удалось обновить токен", e);
+      } catch (error) {
+        localStorage.removeItem("shaar-access-token")
+        Cookies.remove("shaar-refresh-token")
+        console.error(error);
       }
     }
     throw error;

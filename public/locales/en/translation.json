@@ -118,5 +118,6 @@
   "username": "Username",
   "phone_number": "Phone Number",
   "cancel": "Cancel",
-  "save": "Save"
+  "save": "Save",
+  "login": "Sign in"
 }

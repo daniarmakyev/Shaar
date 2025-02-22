@@ -30,19 +30,19 @@
     @apply w-[0px];
   }
   .scrollbar-visible::-webkit-scrollbar {
-    width: 8px; 
-    height: 8px; 
+    width: 8px;
+    height: 8px;
   }
-  
+
   .scrollbar-visible::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.5); 
+    background-color: rgba(0, 0, 0, 0.5);
     border-radius: 10px;
   }
-  
+
   .scrollbar-visible::-webkit-scrollbar-track {
-    background-color: #f1f1f1; 
+    background-color: #f1f1f1;
   }
-  
+
   .shadow-hidden {
     @apply !shadow-none hover:!shadow-none;
   }
@@ -53,6 +53,32 @@
     @apply mx-auto px-10 max-w-[1320px];
   }
   .btn {
-    @apply rounded-[19px] bg-green-white text-white  animate-def clickable disabled:pointer-events-none disabled:bg-[#D4D4D4] ;
+    @apply rounded-[19px] bg-green-white text-white  animate-def clickable disabled:pointer-events-none disabled:bg-[#D4D4D4];
   }
+}
+.react-calendar__month-view__weekdays {
+  display: flex;
+  justify-content: space-around;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  justify-content: center;
+  max-width: 63px;
+  text-decoration: none;
+  display: flex;
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: gray;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.react-calendar__navigation__label__labelText
+  .react-calendar__navigation__label__labelText--from {
+  position: absolute;
 }
