@@ -21,6 +21,15 @@ export interface IUser extends ICar {
   payment: string;
   ava: FileList;
 }
+
+export interface IEvent {
+  id: number;
+  name: string;
+  description: string;
+  date: string;
+  address: string;
+
+}
 export interface IRegisterBody extends Omit<IRegisterForm, "ava"> {
   ava: File;
 }

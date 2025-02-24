@@ -2,7 +2,6 @@ import { atom } from "jotai";
 import { $apiPrivate, apiConfig } from "../constants/api";
 import { IUser } from "../types/api.types";
 
-// Создаем атом для хранения пользователя
 export const userAtom = atom<IUser | null>(null);
 
 class UserService {

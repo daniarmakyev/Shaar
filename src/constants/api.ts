@@ -14,6 +14,7 @@ export enum apiConfig {
   AirQuality = "air",
   Weather = "/weather",
   User = "/user",
+  Events = "/events",
 }
 
 export const queryKeys = {

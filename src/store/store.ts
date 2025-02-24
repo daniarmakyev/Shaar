@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { IBuildingsFilter, INotification } from "../types/client.types";
-import { IUser } from "../types/api.types"; // Импортируем тип пользователя
+import { IEvent, IUser } from "../types/api.types"; // Импортируем тип пользователя
 
 export const notificationAtom = atom<INotification>({
   message: "",
@@ -22,3 +22,6 @@ export const searchValueAtom = atom("");
 export const tourOnMapAtom = atom(0);
 
 export const userAtom = atom<IUser | null>(null);
+
+export const eventAtom = atom<IEvent[] | null>(null);
+
