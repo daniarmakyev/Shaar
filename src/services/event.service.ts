@@ -1,8 +1,8 @@
 import { $api, apiConfig } from "../constants/api";
 
 class EventsService {
-  getEvents() {
-    return $api(apiConfig.Events);
+  getEvents(page:string) {
+    return $api(apiConfig.Events + page);
   }
 
   postEvent(event : Event) {

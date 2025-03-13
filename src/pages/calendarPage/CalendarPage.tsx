@@ -4,21 +4,89 @@ import data from "../../assets/images/icons/data.svg";
 import Calendar from "react-calendar";
 import { useAtom } from "jotai";
 import { eventAtom } from "../../store/store";
-import { useQuery } from "@tanstack/react-query";
-import EventsService from "../../services/event.service";
 import eventService from "../../services/event.service";
 import { IEvent } from "../../types/api.types";
+
+interface PaginationResponse {
+  events: IEvent[];
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
+}
+
 const CalendarPage: FC = () => {
   const lang = localStorage.getItem("i18nextLng");
   const [date, setDate] = useState<Date | null>(new Date());
-
   const [events, setEvents] = useAtom(eventAtom);
+  const [paginationInfo, setPaginationInfo] = useState<Omit<PaginationResponse, 'events'>>({
+    hasNextPage: false,
+    hasPrevPage: false,
+    limit: 6,
+    page: 1,
+    total: 0,
+    totalPages: 1,
+  });
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    eventService.getEvents().then((response) => {
-      setEvents(response.data);
-    });
-  }, [setEvents]);
+    fetchEvents(currentPage);
+  }, [currentPage, setEvents]);
+
+  const truncateText = (text:string, maxLength = 20) => {
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
+  const fetchEvents = async (page: number) => {
+    try {
+      const response = await eventService.getEvents(page+'');
+      setEvents(response.data.events);
+      setPaginationInfo({
+        hasNextPage: response.data.hasNextPage,
+        hasPrevPage: response.data.hasPrevPage,
+        limit: response.data.limit,
+        page: response.data.page,
+        total: response.data.total,
+        totalPages: response.data.totalPages,
+      });
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= paginationInfo.totalPages; i++) {
+      if (
+        i === 1 ||
+        i === paginationInfo.totalPages ||
+        (i >= currentPage - 1 && i <= currentPage + 1)
+      ) {
+        pageNumbers.push(
+          <button
+            key={i}
+            onClick={() => handlePageChange(i)}
+            className={`mx-1 px-3 py-1 rounded-md ${
+              currentPage === i ? "bg-green-2 text-white" : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {i}
+          </button>
+        );
+      } else if (
+        !pageNumbers[pageNumbers.length - 1]?.key?.toString().includes('dots')
+      ) {
+        pageNumbers.push(<span key={`dots-${i}`} className="mx-1">...</span>);
+      }
+    }
+    return pageNumbers;
+  };
 
   return (
     <>
@@ -97,7 +165,7 @@ const CalendarPage: FC = () => {
                   <div className="text-green-bg font-semibold">
                     <section className="flex mt-1">
                       <img src={locations} alt="locations" className="me-1" />
-                      <span>{event.address}</span>
+                      <span>{truncateText(event.address)}</span>
                     </section>
                     <section className="flex mt-1">
                       <img src={data} alt="data" className="me-1" />
@@ -116,6 +184,23 @@ const CalendarPage: FC = () => {
               </div>
             ))}
         </div>
+         <div className="flex justify-center mt-4">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={!paginationInfo.hasPrevPage}
+              className="mx-2 px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
+            >
+              Previous
+            </button>
+            {renderPageNumbers()}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={!paginationInfo.hasNextPage}
+              className="mx-2 px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
       </div>
     </>
   );
