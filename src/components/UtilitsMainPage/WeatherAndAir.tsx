@@ -65,13 +65,15 @@ const WeatherAndAirQuality: FC = () => {
       <div className="container flex gap-3 sm:gap-10 absolute top-2 sm:relative sm:mt-9">
         <div className="flex h-16 relative min-w-32 w-44 sm:w-44 shadow-md rounded-r-2xl">
           <h3
-            className="bg-[#55B0FF] text-white pt-5 ps-1 pe-3 text-2xl sm:text-xl font-bold rounded-s-xl rounded-r-[150px] z-[2] text-gray-800"
+            className={`${temperature ? "bg-[#55B0FF] text-white pt-5 ps-1 pe-3 text-2xl sm:text-xl font-bold rounded-s-xl rounded-r-[150px] z-[2] text-gray-800" : "bg-[#55B0FF] text-white pt-5 ps-9 pe-3 text-2xl sm:text-xl font-bold rounded-s-xl rounded-r-[150px] z-[2] text-gray-800"}`}
             style={{
               textShadow:
                 "0px 1px 2px 0px #0000001A, 2px 4px 4px 0px #00000017",
             }}
           >
-            {temperature !== null ? `${temperature}°C` : "..."}
+            {temperature
+              ? `${temperature}°C`
+              : "..."}
           </h3>
           <div
             className="absolute h-16 right-0 w-[80%] rounded-r-2xl"
@@ -82,17 +84,13 @@ const WeatherAndAirQuality: FC = () => {
           >
             <span>
               {WeactherImage ? (
-              <img
-                src={WeactherImage}
-                alt="weather state"
-                className="ms-12 sm:ms-16"
-              />
+                <img
+                  src={WeactherImage}
+                  alt="weather state"
+                  className="ms-12 sm:ms-16"
+                />
               ) : (
-              <img
-                src={weatherImage}
-                alt=""
-                className="-mt-2"
-              />
+                <img src={weatherImage} alt="" className="-mt-2" />
               )}
             </span>
           </div>

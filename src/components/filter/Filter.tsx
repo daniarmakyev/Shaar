@@ -125,23 +125,24 @@ const Filter: FC = () => {
               {t("all")}
             </Link>
           </li>
-          {categoriesData?.map((category) => (
-            <li key={category}>
-              <Link
-                to={`/`}
-                onClick={() => changeCategory(category)}
-                className={clsx(
-                  "rounded-[11px] px-[15px] h-[46px] flex items-center bg-[#E7E7E7] font-bold text-[14px] text-green-2 btn shadow-hidden animate-def hover:translate-y-[-10px]",
-                  {
-                    "!bg-green-2 !text-white":
-                      buildingFilter.categories.includes(category),
-                  }
-                )}
-              >
-                {t(`${category}`)}
-              </Link>
-            </li>
-          ))}
+          {Array.isArray(categoriesData) &&
+            categoriesData.map((category) => (
+              <li key={category}>
+                <Link
+                  to={`/`}
+                  onClick={() => changeCategory(category)}
+                  className={clsx(
+                    "rounded-[11px] px-[15px] h-[46px] flex items-center bg-[#E7E7E7] font-bold text-[14px] text-green-2 btn shadow-hidden animate-def hover:translate-y-[-10px]",
+                    {
+                      "!bg-green-2 !text-white":
+                        buildingFilter.categories.includes(category),
+                    }
+                  )}
+                >
+                  {t(`${category}`)}
+                </Link>
+              </li>
+            ))}
         </ul>
         <div className="sm:relative pe-7 sm:mt-0 mt-5 ms-auto">
           {isFilterOpen && (

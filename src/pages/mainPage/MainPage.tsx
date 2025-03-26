@@ -35,9 +35,9 @@ const MainPage: FC = () => {
   }, [buildingsFilter]);
 
   const groupPlacesByCategory = (
-    places: IPlace[]
+    places: IPlace[] | undefined
   ): Record<string, IPlace[]> => {
-    if (!places) return {};
+    if (!Array.isArray(places)) return {}; 
     return places.reduce((acc, place) => {
       const category = place.category;
       if (!acc[category]) {
@@ -112,10 +112,16 @@ const MainPage: FC = () => {
                         </span>
                         <div className="justify-center flex gap-2 text-green-white">
                           {" "}
-                          <span className="text-sm font-semibold text-nowrap text-green-bg" style={{fontSize:"13px"}}>
+                          <span
+                            className="text-sm font-semibold text-nowrap text-green-bg"
+                            style={{ fontSize: "13px" }}
+                          >
                             {place.name}
                           </span>{" "}
-                          <span className="font-medium" style={{fontSize:"13px"}}>
+                          <span
+                            className="font-medium"
+                            style={{ fontSize: "13px" }}
+                          >
                             {" "}
                             {category === "hotel"
                               ? `${place.price}${t("s")}/${t("nigth")}`
