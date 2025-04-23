@@ -158,8 +158,7 @@ const ParkingPage: FC = React.memo(() => {
   const [, setPolygons] = useState<google.maps.LatLngLiteral[][]>([]);
   const [userLocation, setUserLocation] =
     useState<google.maps.LatLngLiteral | null>(null);
-  const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Changed to true initially
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedMarker, setSelectedMarker] =
     useState<SelectedMarkerData | null>(null);
   const [route, setRoute] = useState<google.maps.DirectionsResult | null>(null);
@@ -333,118 +332,118 @@ const ParkingPage: FC = React.memo(() => {
     );
   }, [userLocation, selectedMarker]);
 
-  if (isLoading && !googleMapsLoaded) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading map...
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (isLoading) {
+      console.log("Loading map...");
+    }
+  },[]);
 
   return (
-    <LoadScript
-      googleMapsApiKey={googleMapsApiKey}
-      libraries={["drawing", "geometry"]}
-      onLoad={() => {
-        geocoderLoad();
-        setGoogleMapsLoaded(true);
-        setIsLoading(false); // Set loading to false when Google Maps loads
-      }}
-      onError={(error) => {
-        console.error("Ошибка загрузки Google Maps API:", error);
-        setIsLoading(false);
-      }}
-    >
-      {googleMapsLoaded ? (
-        <GoogleMap
-          mapContainerStyle={mapStyles}
-          center={userLocation || defaultCenter}
-          zoom={16}
-          options={mapOptions}
-          onLoad={(map) => {
-            mapRef.current = map;
-          }}
-        >
-          {userLocation && (
-            <Marker
-              position={userLocation}
-              icon={{
-                path: google.maps.SymbolPath
-                  ? google.maps.SymbolPath.CIRCLE
-                  : "some",
-                scale: 10,
-                fillColor: "#4285F4",
-                fillOpacity: 1,
-                strokeColor: "#FFFFFF",
-                strokeWeight: 2,
-              }}
-              zIndex={1000}
-            />
-          )}
-
-          {route && (
-            <DirectionsRenderer
-              directions={route}
-              options={{ suppressMarkers: true }}
-            />
-          )}
-
-          <MarkerClusterer
-            onClick={handleClusterClick}
-            options={clusterOptions}
+    <div className="relative">
+      <LoadScript
+        googleMapsApiKey={googleMapsApiKey}
+        libraries={["drawing", "geometry"]}
+        onLoad={() => {
+          geocoderLoad();
+          setIsLoading(false);
+        }}
+        onError={(error) => {
+          console.error("Ошибка загрузки Google Maps API:", error);
+          setIsLoading(false);
+        }}
+      >
+        {isLoading ? (
+          <div className="flex justify-center items-center h-screen">
+            Loading mdasdaap...
+          </div>
+        ) : (
+          <GoogleMap
+            mapContainerStyle={mapStyles}
+            center={userLocation || defaultCenter}
+            zoom={16}
+            options={mapOptions}
+            onLoad={(map) => {
+              mapRef.current = map;
+            }}
           >
-            {(clusterer) => (
-              <>
-                {maki.map((marker, i) => (
-                  <Marker
-                    key={i}
-                    position={marker}
-                    clusterer={clusterer}
-                    onClick={() => handleMarkerClick(marker)}
-                  />
-                ))}
-              </>
+            {userLocation && (
+              <Marker
+                position={userLocation}
+                icon={{
+                  path: google.maps.SymbolPath
+                    ? google.maps.SymbolPath.CIRCLE
+                    : "some",
+                  scale: 10,
+                  fillColor: "#4285F4",
+                  fillOpacity: 1,
+                  strokeColor: "#FFFFFF",
+                  strokeWeight: 2,
+                }}
+                zIndex={1000}
+              />
             )}
-          </MarkerClusterer>
 
-          {poly.map((paths, i) => (
-            <Polygon
-              key={i}
-              paths={paths}
-              options={{
-                fillColor: "#00ff73",
-                fillOpacity: 0.4,
-                strokeColor: "#00cb5f",
-                strokeWeight: 2,
-              }}
-              onClick={() =>
-                deleteMode &&
-                setPolygons((prev) => prev.filter((_, idx) => idx !== i))
-              }
-            />
-          ))}
+            {route && (
+              <DirectionsRenderer
+                directions={route}
+                options={{ suppressMarkers: true }}
+              />
+            )}
 
-          {drawingMode && (
-            <DrawingManager
-              onOverlayComplete={handleOverlayComplete}
-              drawingMode={drawingMode}
-              options={{
-                drawingControlOptions: {
-                  position: google.maps.ControlPosition.TOP_LEFT,
-                  drawingModes: [
-                    google.maps.drawing.OverlayType.MARKER,
-                    google.maps.drawing.OverlayType.POLYGON,
-                  ],
-                },
-              }}
-            />
-          )}
-        </GoogleMap>
-      ) : (
-        <div className="flex justify-center items-center h-screen">
-          Loading Google Maps...
-        </div>
-      )}
+            <MarkerClusterer
+              onClick={handleClusterClick}
+              options={clusterOptions}
+            >
+              {(clusterer) => (
+                <>
+                  {maki.map((marker, i) => (
+                    <Marker
+                      key={i}
+                      position={marker}
+                      clusterer={clusterer}
+                      onClick={() => handleMarkerClick(marker)}
+                    />
+                  ))}
+                </>
+              )}
+            </MarkerClusterer>
+
+            {poly.map((paths, i) => (
+              <Polygon
+                key={i}
+                paths={paths}
+                options={{
+                  fillColor: "#00ff73",
+                  fillOpacity: 0.4,
+                  strokeColor: "#00cb5f",
+                  strokeWeight: 2,
+                }}
+                onClick={() =>
+                  deleteMode &&
+                  setPolygons((prev) => prev.filter((_, idx) => idx !== i))
+                }
+              />
+            ))}
+
+            {drawingMode && (
+              <DrawingManager
+                onOverlayComplete={handleOverlayComplete}
+                drawingMode={drawingMode}
+                options={{
+                  drawingControlOptions: {
+                    position: google.maps.ControlPosition.TOP_LEFT,
+                    drawingModes: [
+                      google.maps.drawing.OverlayType.MARKER,
+                      google.maps.drawing.OverlayType.POLYGON,
+                    ],
+                  },
+                }}
+              />
+            )}
+          </GoogleMap>
+        )}
+      </LoadScript>
+
       {userRole === "admin" && (
         <div className="absolute top-20 bg-green-bg rounded-xl ">
           <button
@@ -538,7 +537,7 @@ const ParkingPage: FC = React.memo(() => {
           </div>
         </div>
       )}
-    </LoadScript>
+    </div>
   );
 });
 
