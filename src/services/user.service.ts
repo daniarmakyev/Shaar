@@ -17,7 +17,7 @@ class UserService {
     }
   }
 
-  async changeUser(userData: any, set: (update: IUser) => void) {
+  async changeUser(userData: object, set: (update: IUser) => void) {
     try {
       const { data } = await $apiPrivate.patch(apiConfig.User, userData, {
         headers: {

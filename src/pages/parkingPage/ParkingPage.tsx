@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, FC, useCallback } from "react";
+import React, { useState, useRef, FC, useCallback } from "react";
 import {
   GoogleMap,
   LoadScript,
@@ -11,6 +11,12 @@ import {
 import greenRound from "../../assets/images/greenRound.png";
 import { useTranslation } from "react-i18next";
 const googleMapsApiKey = import.meta.env.VITE_MAP_KEY;
+
+export interface SelectedMarkerData {
+  lat: number;
+  lng: number;
+  address: string;
+}
 
 const maki = [
   { lat: 42.825977, lng: 74.548159 },
@@ -49,11 +55,8 @@ const poly = [
   ],
   [
     { lat: 42.82782199171068, lng: 74.55082112781832 },
-
     { lat: 42.82769019374678, lng: 74.55092707507441 },
-
     { lat: 42.82782494240816, lng: 74.55124625794718 },
-
     { lat: 42.82789969336371, lng: 74.55111751191447 },
   ],
   [
@@ -119,6 +122,7 @@ const poly = [
     },
   ],
 ];
+
 const clusterOptions = {
   maxZoom: 18,
   gridSize: 60,
@@ -133,7 +137,7 @@ const clusterOptions = {
   })),
 };
 
-const mapStyles = { height: "90vh", width: "100%",  };
+const mapStyles = { height: "90vh", width: "100%" };
 const defaultCenter = { lat: 42.8746, lng: 74.5698 };
 const mapOptions = {
   styles: [
@@ -143,21 +147,21 @@ const mapOptions = {
   ],
 };
 
+interface ClusterType {
+  markers?: google.maps.Marker[];
+}
+
 const ParkingPage: FC = React.memo(() => {
   const { t } = useTranslation();
   const [markerClicked, setMarkerClicked] = useState(false);
-  const [markers, setMarkers] = useState<google.maps.LatLngLiteral[]>([]);
-  const [polygons, setPolygons] = useState<google.maps.LatLngLiteral[][]>([]);
-  const [userLocation, setUserLocation] =
-    useState<google.maps.LatLngLiteral | null>({
-      lat: 42.840480748627705,
-      lng: 74.60114410741835,
-    });
-  const [selectedMarker, setSelectedMarker] = useState<{
-    lat: number;
-    lng: number;
-    address: string;
-  } | null>(null);
+  const [, setMarkers] = useState<google.maps.LatLngLiteral[]>([]);
+  const [, setPolygons] = useState<google.maps.LatLngLiteral[][]>([]);
+  const [userLocation] = useState<google.maps.LatLngLiteral>({
+    lat: 42.840480748627705,
+    lng: 74.60114410741835,
+  });
+  const [selectedMarker, setSelectedMarker] =
+    useState<SelectedMarkerData | null>(null);
   const [route, setRoute] = useState<google.maps.DirectionsResult | null>(null);
   const [drawingMode, setDrawingMode] =
     useState<google.maps.drawing.OverlayType | null>(null);
@@ -167,6 +171,7 @@ const ParkingPage: FC = React.memo(() => {
   const geocoder = useRef<google.maps.Geocoder | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const userRole = "admin";
+
   const toggleControls = () => {
     setControlsVisible(!controlsVisible);
   };
@@ -194,9 +199,19 @@ const ParkingPage: FC = React.memo(() => {
     []
   );
 
-  const handleClusterClick = useCallback((cluster: any) => {
-    const bounds = cluster.getBounds();
-    mapRef.current?.fitBounds(bounds, 180);
+  const handleClusterClick = useCallback((cluster: ClusterType) => {
+    if (!cluster.markers || cluster.markers.length === 0 || !mapRef.current)
+      return;
+
+    const bounds = new google.maps.LatLngBounds();
+    cluster.markers.forEach((marker) => {
+      const markerPos = marker.getPosition();
+      if (markerPos) {
+        bounds.extend(markerPos);
+      }
+    });
+
+    mapRef.current.fitBounds(bounds, 180);
   }, []);
 
   const handleMarkerClick = useCallback(
@@ -228,12 +243,10 @@ const ParkingPage: FC = React.memo(() => {
           unitSystem: google.maps.UnitSystem.METRIC,
         },
         (response, status) => {
-          if (status === google.maps.DistanceMatrixStatus.OK) {
-            const result = response!.rows[0].elements[0].distance;
-            console.log(result);
-            // @ts-ignore
-            if (response!.rows[0].elements[0].status === "OK") {
-              setDistance(result.text);
+          if (status === google.maps.DistanceMatrixStatus.OK && response) {
+            const result = response.rows[0].elements[0];
+            if (result.status === "OK") {
+              setDistance(result.distance.text);
             } else {
               console.error("DistanceMatrix result not OK:", result);
             }
@@ -251,29 +264,44 @@ const ParkingPage: FC = React.memo(() => {
 
     try {
       const { results } = await geocoder.current.geocode({ location: marker });
-      setSelectedMarker((prev: any) => ({
-        ...prev,
-        address: results[0]?.formatted_address || "Адрес не найден",
-      }));
+      setSelectedMarker((prev) =>
+        prev
+          ? {
+              ...prev,
+              address: results[0]?.formatted_address || "Адрес не найден",
+            }
+          : null
+      );
     } catch (error) {
       console.error("Geocoding error:", error);
-      setSelectedMarker((prev: any) => ({
-        ...prev,
-        address: "Ошибка при получении адреса",
-      }));
+      setSelectedMarker((prev) =>
+        prev
+          ? {
+              ...prev,
+              address: "Ошибка при получении адреса",
+            }
+          : null
+      );
     }
   }, []);
 
   const handleRoute = useCallback(() => {
     if (!userLocation || !selectedMarker) return;
 
-    new google.maps.DirectionsService().route(
+    const directionsService = new google.maps.DirectionsService();
+    directionsService.route(
       {
         origin: userLocation,
-        destination: selectedMarker,
+        destination: { lat: selectedMarker.lat, lng: selectedMarker.lng },
         travelMode: google.maps.TravelMode.DRIVING,
       },
-      (result) => setRoute(result)
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+          setRoute(result);
+        } else {
+          console.error("Directions request failed due to " + status);
+        }
+      }
     );
   }, [userLocation, selectedMarker]);
 
@@ -351,7 +379,7 @@ const ParkingPage: FC = React.memo(() => {
         )}
       </GoogleMap>
       {userRole === "admin" && (
-        <div className="top-20 absolute bg-green-white rounded-xl">
+        <div className="absolute top-20 bg-green-bg rounded-xl ">
           <button
             onClick={toggleControls}
             className="bg-gray-500 text-white px-5 py-2 rounded-xl mb-2"
@@ -381,7 +409,7 @@ const ParkingPage: FC = React.memo(() => {
 
               <button
                 onClick={() => setDeleteMode(!deleteMode)}
-                className="bg-red-500 text-white px-5 py-2 rounded-xl"
+                className="bg-red-500 text-white px-5 py-2 rounded-xl mr-2"
               >
                 {deleteMode ? "Отменить удаление" : "Режим удаления"}
               </button>
@@ -398,22 +426,25 @@ const ParkingPage: FC = React.memo(() => {
       )}
 
       {markerClicked && (
-        <div className="text-green-white rounded-2xl absolute bottom-24 bg-white max-w-md left-0 right-0 mx-auto mt-4 text-center pb-4 !shadow-[1px_1px_20px_rgba(0,0,0,0.3)] hover:!shadow-[1px_1px_10px_rgba(0,0,0,0.3)]">
+        <div className="absolute bottom-24 bg-white max-w-md left-0 right-0 mx-auto mt-4 text-center pb-4 shadow-lg rounded-2xl hover:shadow-md">
           {selectedMarker && selectedMarker.address && (
             <div className="mt-2 text-center font-semibold">
-              <span className="text-green">{`${t("address")}`}</span>: {selectedMarker.address}
+              <span className="text-green-500">{`${t("address")}`}</span>:{" "}
+              {selectedMarker.address}
             </div>
           )}
           {distance !== null && (
-            <div className="mt-2 text-center text-green-white font-semibold flex justify-center items-center">
-              <span className="text-green font-bold">{`${t("distance")}`}</span>
+            <div className="mt-2 text-center font-semibold flex justify-center items-center">
+              <span className="text-green-500 font-bold">{`${t(
+                "distance"
+              )}`}</span>
               <svg
                 width="11"
                 height="13"
                 viewBox="0 0 11 13"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="ms-3 me-1 "
+                className="ms-3 me-1"
               >
                 <path
                   d="M2.2 9.4C2.35913 9.35359 2.53018 9.37229 2.67552 9.45199C2.82086 9.5317 2.92859 9.66587 2.975 9.825C3.02141 9.98413 3.00271 10.1552 2.92301 10.3005C2.8433 10.4459 2.70913 10.5536 2.55 10.6C2.2375 10.6912 2.0125 10.7875 1.86813 10.875C2.01688 10.9644 2.25187 11.0644 2.57812 11.1575C3.3 11.3637 4.33313 11.5 5.5 11.5C6.66687 11.5 7.7 11.3637 8.42187 11.1575C8.74875 11.0644 8.98313 10.9644 9.13188 10.875C8.98813 10.7875 8.76313 10.6912 8.45063 10.6C8.294 10.5515 8.16269 10.4435 8.08499 10.2991C8.00729 10.1547 7.98944 9.98562 8.03527 9.82821C8.0811 9.6708 8.18694 9.53769 8.33 9.45759C8.47305 9.37749 8.64184 9.35681 8.8 9.4C9.2175 9.52187 9.6 9.67813 9.89375 9.87875C10.1656 10.0656 10.5 10.3912 10.5 10.875C10.5 11.3644 10.1575 11.6925 9.88125 11.8794C9.5825 12.0806 9.19188 12.2375 8.765 12.3594C7.90375 12.6062 6.75 12.75 5.5 12.75C4.25 12.75 3.09625 12.6062 2.235 12.3594C1.80813 12.2375 1.4175 12.0806 1.11875 11.8794C0.8425 11.6919 0.5 11.3644 0.5 10.875C0.5 10.3912 0.834375 10.0656 1.10625 9.87875C1.4 9.67813 1.7825 9.52187 2.2 9.4ZM5.5 0.25C6.7432 0.25 7.93549 0.74386 8.81456 1.62294C9.69364 2.50201 10.1875 3.6943 10.1875 4.9375C10.1875 6.5425 9.3125 7.8475 8.40625 8.775C8.046 9.13996 7.65887 9.47736 7.24813 9.78437C6.87687 10.0631 6.02813 10.5856 6.02813 10.5856C5.86715 10.6771 5.68516 10.7252 5.5 10.7252C5.31484 10.7252 5.13285 10.6771 4.97187 10.5856C4.55066 10.3414 4.14336 10.0739 3.75187 9.78437C3.34052 9.47811 2.95334 9.14066 2.59375 8.775C1.6875 7.8475 0.8125 6.5425 0.8125 4.9375C0.8125 3.6943 1.30636 2.50201 2.18544 1.62294C3.06451 0.74386 4.2568 0.25 5.5 0.25ZM5.5 3.6875C5.16848 3.6875 4.85054 3.8192 4.61612 4.05362C4.3817 4.28804 4.25 4.60598 4.25 4.9375C4.25 5.26902 4.3817 5.58696 4.61612 5.82138C4.85054 6.0558 5.16848 6.1875 5.5 6.1875C5.83152 6.1875 6.14946 6.0558 6.38388 5.82138C6.6183 5.58696 6.75 5.26902 6.75 4.9375C6.75 4.60598 6.6183 4.28804 6.38388 4.05362C6.14946 3.8192 5.83152 3.6875 5.5 3.6875Z"
@@ -421,20 +452,22 @@ const ParkingPage: FC = React.memo(() => {
                 />
               </svg>
               {distance}
-              <span className="ms-1"><span className="text-green font-bold">{`${t("price")}`}:</span> 100 som/hour</span>
+              <span className="ms-1">
+                <span className="text-green-500 font-bold">
+                  {`${t("price")}`}:
+                </span>{" "}
+                100 som/hour
+              </span>
             </div>
           )}
 
           <div className="flex items-center mx-auto justify-center gap-6">
             <button
               onClick={handleRoute}
-              className="bg-green-500 text-white font-semibold px-5 py-2 rounded-xl mt-4 bg-green-white"
+              className="bg-green-500 text-white font-semibold px-5 py-2 rounded-xl mt-4"
             >
               {`${t("build_route")}`}
             </button>
-            {/* <button className="bg-green-500 text-white font-semibold px-12 py-2 rounded-xl mt-4 bg-green-white">
-              Book
-            </button> */}
           </div>
         </div>
       )}

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { forwardRef, useState, useEffect } from "react";
+import { forwardRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import passwordHiddenIcon from "../../../assets/images/icons/password-hidden.svg";
 import { FieldError } from "react-hook-form";
@@ -32,7 +32,6 @@ const Input = forwardRef<HTMLInputElement, Props>(
     const location = useLocation(); 
 
     const isLoginPage = location.pathname === "/login";
-    const isRegisterPage = location.pathname === "/register";
 
     return (
       <div
@@ -69,7 +68,8 @@ const Input = forwardRef<HTMLInputElement, Props>(
 
         {isPassword && (
           <button
-            className="absolute right-[37px]"
+            className="absolute right-[0px]  rounded-r-xl opacity-85"
+            type="button"
             onClick={() => setIsPasswordHidden((prev) => !prev)}
           >
             <img

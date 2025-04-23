@@ -7,19 +7,16 @@ import { useAtom } from "jotai";
 import { tourOnMapAtom } from "../../store/store";
 import { useTranslation } from "react-i18next";
 
-// Типы для доступных языков
 type Language = "en" | "ru" | "kg";
 
 const TourPage: FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [_, setTourOnMapAtom] = useAtom(tourOnMapAtom);
+  const [, setTourOnMapAtom] = useAtom(tourOnMapAtom);
   const { t } = useTranslation();
 
-  // Получаем текущий язык из localStorage (по ключу i18nextLng)
-  const currentLang = (localStorage.getItem("i18nextLng") as Language) || "en"; // "en" по умолчанию
+  const currentLang = (localStorage.getItem("i18nextLng") as Language) || "en";
 
-  // Поиск тура по ID
   const tour = tours.find((tour) => tour.id === +(id || 0)) as
     | ITour
     | undefined;
@@ -36,8 +33,9 @@ const TourPage: FC = () => {
     contacts: { tel },
   } = tour;
 
-  const tourName = name[currentLang] || name["en"]; // Добавляем fallback на английский
-  const tourDescription = description[currentLang] || description["en"]; // Фоллбек на английский
+  const tourName =
+    (name as Record<Language, string>)[currentLang] || name["en"];
+  const tourDescription = description[currentLang] || description["en"];
 
   return (
     <div className="pt-[48px]">
@@ -94,11 +92,9 @@ const TourPage: FC = () => {
           </h2>
           {schedule.map(({ time: { start, end }, location: { name } }, key) => (
             <span key={key} className="block">
-          
-              {start} AM - {end} AM:    {
-                //@ts-ignore
-              } {name[currentLang] || name["en"]}{" "}
-              {/* Фоллбек на английский */}
+              {start} AM - {end} AM: {}{" "}
+              {(name as unknown as Record<Language, string>)[currentLang] ||
+                (name as unknown as Record<Language, string>)["en"]}{" "}
             </span>
           ))}
           <Link

@@ -14,19 +14,17 @@ import authService from "../../services/auth.service";
 import { useAtom } from "jotai";
 import { isAuthAtom, notificationAtom } from "../../store/store";
 import { useTranslation } from "react-i18next";
-import avaDefaultImage from "../../assets/images/ava-default.png";
-import { urlToFile } from "../../constants/helpers";
+
 
 const RegisterPage: FC = () => {
   const navigate = useNavigate();
   const {
-    watch,
     register,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<IRegisterForm>({ mode: "onTouched" });
   const { t } = useTranslation();
-  const [_, setNotification] = useAtom(notificationAtom);
+  const [, setNotification] = useAtom(notificationAtom);
   const [isAuth] = useAtom(isAuthAtom);
 
   const { mutate: registerUser, isPending } = useMutation({

@@ -1,4 +1,4 @@
-import { forwardRef, useState, useEffect } from "react";
+import { forwardRef,   } from "react";
 import { FieldError } from "react-hook-form";
 
 interface Props {
@@ -12,10 +12,10 @@ interface Props {
 const ProfileInput = forwardRef<HTMLInputElement, Props>(
   (
     {
-      type = "text",
+      // inputClassName,
+      className,
+      // type,
       placeholder = "",
-      className = "",
-      inputClassName = "",
       error,
       ...register
     },
@@ -26,7 +26,7 @@ const ProfileInput = forwardRef<HTMLInputElement, Props>(
         <input
           ref={ref}
           placeholder={placeholder}
-          className="w-full border-b p-2 text-grey border-grey focus:outline-none focus:border-green transition-colors"
+          className={`w-full border-b p-2 text-grey border-grey focus:outline-none focus:border-green transition-colors ${className}`}
           {...register}
         />
         {error && (

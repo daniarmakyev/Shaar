@@ -6,9 +6,7 @@ import { useAtom } from "jotai";
 import arrow from "../../assets/images/icons/arrow-swiper.png";
 import { buildingsFilterAtom } from "../../store/store";
 import { usePlaces } from "../../hooks/queries/usePlaces";
-//@ts-ignore
 import "swiper/css";
-//@ts-ignore
 import "swiper/css/navigation";
 import { IPlace } from "../../types/api.types";
 import { Link } from "react-router-dom";
@@ -37,7 +35,7 @@ const MainPage: FC = () => {
   const groupPlacesByCategory = (
     places: IPlace[] | undefined
   ): Record<string, IPlace[]> => {
-    if (!Array.isArray(places)) return {}; 
+    if (!Array.isArray(places)) return {};
     return places.reduce((acc, place) => {
       const category = place.category;
       if (!acc[category]) {

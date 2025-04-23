@@ -5,7 +5,6 @@ import Footer from "../../components/footer/Footer";
 import Search from "../../components/search/Search";
 import Filter from "../../components/filter/Filter";
 import WeatherAndAirQuality from "../../components/UtilitsMainPage/WeatherAndAir";
-
 const MainLayout: FC = () => {
   return (
     <>

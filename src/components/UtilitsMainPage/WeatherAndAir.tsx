@@ -1,8 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import weatherImage from "../../assets/images/weather.png";
 
-// @ts-ignore
-import "swiper/css";
+// import "swiper/css";
 import excelent from "../../assets/images/icons/excelent.png";
 import nice from "../../assets/images/icons/nice.png";
 import regular from "../../assets/images/icons/regular.png";

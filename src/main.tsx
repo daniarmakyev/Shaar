@@ -1,17 +1,14 @@
 import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
+import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { MotionConfig } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { getDefaultStore } from "jotai";
-import i18n from "./i18n.ts";
-import { notificationAtom } from "./store/store.ts";
-import { APIProvider } from "@vis.gl/react-google-maps";
+import i18n from "./i18n";
+import { notificationAtom } from "./store/store";
 import "./index.css";
 
-
 const store = getDefaultStore();
-const googleMapsApiKey = import.meta.env.VITE_MAP_KEY;
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { refetchOnWindowFocus: false },
@@ -32,9 +29,7 @@ createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <MotionConfig transition={{ ease: "anticipate", duration: 0.7 }}>
-
-          <App />
-
+        <App />
       </MotionConfig>
     </BrowserRouter>
   </QueryClientProvider>

@@ -19,7 +19,7 @@ interface PaginationResponse {
 
 const CalendarPage: FC = () => {
   const lang = localStorage.getItem("i18nextLng");
-  const [date, setDate] = useState<Date | null>(new Date());
+  const [date,] = useState<Date | null>(new Date());
   const [events, setEvents] = useAtom(eventAtom);
   const [paginationInfo, setPaginationInfo] = useState<Omit<PaginationResponse, 'events'>>({
     hasNextPage: false,
@@ -90,7 +90,7 @@ const CalendarPage: FC = () => {
 
   return (
     <>
-      <div className="sm:container bg-gray-bg sm:pt-7">
+      <div className="sm:container bg-gray-bg sm:pt-7 sm:pb-3 pb-24">
         <div className="flex items-start mt-8">
           <div className="max-w-[500px] w-full   min-h-[252px] max-h-[252px] relative mb-5">
             <div>
@@ -127,7 +127,7 @@ const CalendarPage: FC = () => {
             </div>
           </div>
           <div className="">
-            <h4>Your </h4>
+    {/* Добавить */}
           </div>
         </div>
         <h5 className="text-[#157A4B] font-bold text-4xl w-fit mx-auto ">

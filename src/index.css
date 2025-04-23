@@ -82,3 +82,7 @@
   .react-calendar__navigation__label__labelText--from {
   position: absolute;
 }
+.swiper-button-next:after, .swiper-rtl .swiper-button-prev:after {
+  content: '' !important;
+}
+

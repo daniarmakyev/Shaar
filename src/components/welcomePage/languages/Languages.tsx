@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import backgroundImage from "../../../assets/images/background.jpg";
 import kgIcon from "../../../assets/images/icons/kg.svg";
 import ruIcon from "../../../assets/images/icons/ru.svg";
-import enIcon from "../../../assets/images/icons/en.svg";
+import enIcon from "../../../assets/images/icons/en.png";
 import { LanguageType } from "../../../types/client.types";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";

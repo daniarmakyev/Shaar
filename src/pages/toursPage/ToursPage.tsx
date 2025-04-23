@@ -3,12 +3,8 @@ import { tours } from "../../constants/term.data";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-type Language = "en" | "ru" | "kg";
-
 const ToursPage: FC = () => {
   const { t } = useTranslation();
-
-  const currentLang = (localStorage.getItem("i18nextLng") as Language) || "en";
 
   return (
     <div className="pt-[114px]">
@@ -21,7 +17,7 @@ const ToursPage: FC = () => {
           {tours.map(
             ({
               id,
-              name,
+
               schedule: [
                 {
                   location: {
@@ -30,7 +26,6 @@ const ToursPage: FC = () => {
                 },
               ],
             }) => {
-              const tourName = name[currentLang] || name["en"];
               return (
                 <>
                   <h2 className="font-medium">Сложность легкая </h2>

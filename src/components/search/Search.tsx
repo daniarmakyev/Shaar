@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import searchIcon from "../../assets/images/icons/search.svg";
 import { useAtom } from "jotai";
 import { searchValueAtom } from "../../store/store";
