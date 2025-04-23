@@ -158,6 +158,8 @@ const ParkingPage: FC = React.memo(() => {
   const [, setPolygons] = useState<google.maps.LatLngLiteral[][]>([]);
   const [userLocation, setUserLocation] =
     useState<google.maps.LatLngLiteral | null>(null);
+  const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMarker, setSelectedMarker] =
     useState<SelectedMarkerData | null>(null);
@@ -346,92 +348,103 @@ const ParkingPage: FC = React.memo(() => {
       libraries={["drawing", "geometry"]}
       onLoad={() => {
         geocoderLoad();
+        setGoogleMapsLoaded(true);
       }}
       onError={(error) => {
         console.error("Ошибка загрузки Google Maps API:", error);
         setIsLoading(false);
       }}
     >
-      <GoogleMap
-        mapContainerStyle={mapStyles}
-        center={userLocation || defaultCenter}
-        zoom={16}
-        options={mapOptions}
-        onLoad={(map) => {
-          mapRef.current = map;
-        }}
-      >
-        {/* User location marker */}
-        {userLocation && google && google.maps.SymbolPath && (
-          <Marker
-            position={userLocation}
-            icon={{
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 10,
-              fillColor: "#4285F4",
-              fillOpacity: 1,
-              strokeColor: "#FFFFFF",
-              strokeWeight: 2,
-            }}
-            zIndex={1000}
-          />
-        )}
-
-        {route && (
-          <DirectionsRenderer
-            directions={route}
-            options={{ suppressMarkers: true }}
-          />
-        )}
-
-        <MarkerClusterer onClick={handleClusterClick} options={clusterOptions}>
-          {(clusterer) => (
-            <>
-              {maki.map((marker, i) => (
-                <Marker
-                  key={i}
-                  position={marker}
-                  clusterer={clusterer}
-                  onClick={() => handleMarkerClick(marker)}
-                />
-              ))}
-            </>
+      {googleMapsLoaded && isLoading ? (
+        <GoogleMap
+          mapContainerStyle={mapStyles}
+          center={userLocation || defaultCenter}
+          zoom={16}
+          options={mapOptions}
+          onLoad={(map) => {
+            mapRef.current = map;
+          }}
+        >
+          {userLocation && (
+            <Marker
+              position={userLocation}
+              icon={{
+                path: google.maps.SymbolPath
+                  ? google.maps.SymbolPath.CIRCLE
+                  : "some",
+                scale: 10,
+                fillColor: "#4285F4",
+                fillOpacity: 1,
+                strokeColor: "#FFFFFF",
+                strokeWeight: 2,
+              }}
+              zIndex={1000}
+            />
           )}
-        </MarkerClusterer>
 
-        {poly.map((paths, i) => (
-          <Polygon
-            key={i}
-            paths={paths}
-            options={{
-              fillColor: "#00ff73",
-              fillOpacity: 0.4,
-              strokeColor: "#00cb5f",
-              strokeWeight: 2,
-            }}
-            onClick={() =>
-              deleteMode &&
-              setPolygons((prev) => prev.filter((_, idx) => idx !== i))
-            }
-          />
-        ))}
+          {route && (
+            <DirectionsRenderer
+              directions={route}
+              options={{ suppressMarkers: true }}
+            />
+          )}
 
-        {drawingMode && (
-          <DrawingManager
-            onOverlayComplete={handleOverlayComplete}
-            drawingMode={drawingMode}
-            options={{
-              drawingControlOptions: {
-                position: google.maps.ControlPosition.TOP_LEFT,
-                drawingModes: [
-                  google.maps.drawing.OverlayType.MARKER,
-                  google.maps.drawing.OverlayType.POLYGON,
-                ],
-              },
-            }}
-          />
-        )}
-      </GoogleMap>
+          <MarkerClusterer
+            onClick={handleClusterClick}
+            options={clusterOptions}
+          >
+            {(clusterer) => (
+              <>
+                {maki.map((marker, i) => (
+                  <Marker
+                    key={i}
+                    position={marker}
+                    clusterer={clusterer}
+                    onClick={() => handleMarkerClick(marker)}
+                  />
+                ))}
+              </>
+            )}
+          </MarkerClusterer>
+
+          {poly.map((paths, i) => (
+            <Polygon
+              key={i}
+              paths={paths}
+              options={{
+                fillColor: "#00ff73",
+                fillOpacity: 0.4,
+                strokeColor: "#00cb5f",
+                strokeWeight: 2,
+              }}
+              onClick={() =>
+                deleteMode &&
+                setPolygons((prev) => prev.filter((_, idx) => idx !== i))
+              }
+            />
+          ))}
+
+          {drawingMode && (
+            <DrawingManager
+              onOverlayComplete={handleOverlayComplete}
+              drawingMode={drawingMode}
+              options={{
+                drawingControlOptions: {
+                  position: google.maps.ControlPosition.TOP_LEFT,
+                  drawingModes: [
+                    google.maps.drawing.OverlayType.MARKER,
+                    google.maps.drawing.OverlayType.POLYGON,
+                  ],
+                },
+              }}
+            />
+          )}
+        </GoogleMap>
+      ) : (
+        <div className="flex justify-center items-center h-screen">
+          Loading Google Maps...
+        </div>
+      )}
       {userRole === "admin" && (
         <div className="absolute top-20 bg-green-bg rounded-xl ">
           <button
@@ -480,7 +493,7 @@ const ParkingPage: FC = React.memo(() => {
       )}
 
       {markerClicked && (
-        <div className="absolute bottom-24 bg-white max-w-md left-0 right-0 mx-auto mt-4 text-center pb-4 shadow-lg rounded-2xl hover:shadow-md">
+        <div className="absolute bottom-24 bg-green-white text-white max-w-md left-0 right-0 mx-auto mt-4 text-center pb-4 shadow-lg rounded-2xl hover:shadow-md">
           {selectedMarker && selectedMarker.address && (
             <div className="mt-2 text-center font-semibold">
               <span className="text-green-500">{`${t("address")}`}</span>:{" "}
