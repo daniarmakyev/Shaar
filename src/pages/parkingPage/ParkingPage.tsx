@@ -159,8 +159,7 @@ const ParkingPage: FC = React.memo(() => {
   const [userLocation, setUserLocation] =
     useState<google.maps.LatLngLiteral | null>(null);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
-
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Changed to true initially
   const [selectedMarker, setSelectedMarker] =
     useState<SelectedMarkerData | null>(null);
   const [route, setRoute] = useState<google.maps.DirectionsResult | null>(null);
@@ -334,7 +333,7 @@ const ParkingPage: FC = React.memo(() => {
     );
   }, [userLocation, selectedMarker]);
 
-  if (isLoading) {
+  if (isLoading && !googleMapsLoaded) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading map...
@@ -349,13 +348,14 @@ const ParkingPage: FC = React.memo(() => {
       onLoad={() => {
         geocoderLoad();
         setGoogleMapsLoaded(true);
+        setIsLoading(false); // Set loading to false when Google Maps loads
       }}
       onError={(error) => {
         console.error("Ошибка загрузки Google Maps API:", error);
         setIsLoading(false);
       }}
     >
-      {googleMapsLoaded && isLoading ? (
+      {googleMapsLoaded ? (
         <GoogleMap
           mapContainerStyle={mapStyles}
           center={userLocation || defaultCenter}
