@@ -340,10 +340,7 @@ const ParkingPage: FC = React.memo(() => {
     );
   }
 
-
-  
   return (
-
     <LoadScript
       googleMapsApiKey={googleMapsApiKey}
       libraries={["drawing", "geometry"]}

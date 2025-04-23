@@ -8,7 +8,7 @@ import {
 } from "@react-google-maps/api";
 import { useParams } from "react-router-dom";
 
-const LIBRARIES: ("places")[] = ["places"];
+const LIBRARIES: "places"[] = ["places"];
 
 const MapPage = () => {
   const googleMapsApiKey = import.meta.env.VITE_MAP_KEY;
@@ -70,7 +70,7 @@ const MapPage = () => {
 
   useEffect(() => {
     if (
-      isScriptLoaded && 
+      isScriptLoaded &&
       selectedMarker &&
       userLocation &&
       (selectedMarker.lat !== userLocation.lat ||
@@ -149,7 +149,7 @@ const MapPage = () => {
   return (
     <LoadScript
       googleMapsApiKey={googleMapsApiKey}
-      libraries={LIBRARIES} 
+      libraries={LIBRARIES}
       onLoad={() => setIsScriptLoaded(true)}
     >
       {isScriptLoaded ? (
@@ -162,7 +162,7 @@ const MapPage = () => {
           >
             <MySearchBox />
             {selectedMarker && <Marker position={selectedMarker} label="B" />}
-            
+
             {userLocation && (
               <Marker
                 position={userLocation}
@@ -177,7 +177,7 @@ const MapPage = () => {
                 zIndex={1000}
               />
             )}
-            
+
             {loading && <div>Загружается маршрут...</div>}
             {routeStatus && <div>{routeStatus}</div>}
             {directions && (
@@ -195,19 +195,29 @@ const MapPage = () => {
               />
             )}
           </GoogleMap>
-          
+
           <button
             onClick={centerOnUserLocation}
             className="absolute bottom-36 right-2 bg-white p-3 rounded-full shadow-lg z-10"
             title="Моё местоположение"
             disabled={!userLocation}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#4285F4"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="12" cy="12" r="10"></circle>
               <circle cx="12" cy="12" r="3"></circle>
             </svg>
           </button>
-          
+
           {locationError && (
             <div className="absolute top-20 left-0 right-0 mx-auto text-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md">
               {locationError}
