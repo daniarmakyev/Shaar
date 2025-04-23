@@ -1,4 +1,4 @@
-import React, { useState, useRef, FC, useCallback } from "react";
+import React, { useState, useRef, FC, useCallback, useEffect } from "react";
 import {
   GoogleMap,
   LoadScript,
@@ -156,10 +156,9 @@ const ParkingPage: FC = React.memo(() => {
   const [markerClicked, setMarkerClicked] = useState(false);
   const [, setMarkers] = useState<google.maps.LatLngLiteral[]>([]);
   const [, setPolygons] = useState<google.maps.LatLngLiteral[][]>([]);
-  const [userLocation] = useState<google.maps.LatLngLiteral>({
-    lat: 42.840480748627705,
-    lng: 74.60114410741835,
-  });
+  const [userLocation, setUserLocation] =
+    useState<google.maps.LatLngLiteral | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedMarker, setSelectedMarker] =
     useState<SelectedMarkerData | null>(null);
   const [route, setRoute] = useState<google.maps.DirectionsResult | null>(null);
@@ -171,6 +170,34 @@ const ParkingPage: FC = React.memo(() => {
   const geocoder = useRef<google.maps.Geocoder | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const userRole = "admin";
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userPos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setUserLocation(userPos);
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+          setUserLocation({
+            lat: 42.840480748627705,
+            lng: 74.60114410741835,
+          });
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser");
+      setUserLocation({
+        lat: 42.840480748627705,
+        lng: 74.60114410741835,
+      });
+    }
+  }, []);
 
   const toggleControls = () => {
     setControlsVisible(!controlsVisible);
@@ -305,14 +332,28 @@ const ParkingPage: FC = React.memo(() => {
     );
   }, [userLocation, selectedMarker]);
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading map...
+      </div>
+    );
+  }
+
+
+  
   return (
+
     <LoadScript
       googleMapsApiKey={googleMapsApiKey}
       libraries={["drawing", "geometry"]}
-      onLoad={geocoderLoad}
-      onError={(error) =>
-        console.error("Ошибка загрузки Google Maps API:", error)
-      }
+      onLoad={() => {
+        geocoderLoad();
+      }}
+      onError={(error) => {
+        console.error("Ошибка загрузки Google Maps API:", error);
+        setIsLoading(false);
+      }}
     >
       <GoogleMap
         mapContainerStyle={mapStyles}
@@ -323,6 +364,22 @@ const ParkingPage: FC = React.memo(() => {
           mapRef.current = map;
         }}
       >
+        {/* User location marker */}
+        {userLocation && google && google.maps.SymbolPath && (
+          <Marker
+            position={userLocation}
+            icon={{
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: "#4285F4",
+              fillOpacity: 1,
+              strokeColor: "#FFFFFF",
+              strokeWeight: 2,
+            }}
+            zIndex={1000}
+          />
+        )}
+
         {route && (
           <DirectionsRenderer
             directions={route}

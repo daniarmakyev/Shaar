@@ -8,7 +8,6 @@ import {
 } from "@react-google-maps/api";
 import { useParams } from "react-router-dom";
 
-// Выносим libraries в константу
 const LIBRARIES: ("places")[] = ["places"];
 
 const MapPage = () => {
@@ -28,10 +27,36 @@ const MapPage = () => {
     useState<google.maps.DirectionsResult | null>(null);
   const [routeStatus, setRouteStatus] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [locationError, setLocationError] = useState<string>("");
 
   const defaultLocation = { lat: 42.840421654800046, lng: 74.60119790139834 };
 
-  // Инициализация координат
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userPos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setUserLocation(userPos);
+          setLocationError("");
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+          setLocationError("Не удалось получить ваше местоположение");
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      setLocationError("Ваш браузер не поддерживает геолокацию");
+    }
+  }, []);
+
   useEffect(() => {
     if (latitude && longitude) {
       setSelectedMarker({
@@ -39,24 +64,24 @@ const MapPage = () => {
         lng: parseFloat(longitude),
       });
     } else {
-      setSelectedMarker(defaultLocation);
+      setSelectedMarker(selectedMarker);
     }
   }, [latitude, longitude]);
 
-  // Запрос маршрута только после загрузки скрипта
   useEffect(() => {
     if (
-      isScriptLoaded && // Проверяем, что скрипт загружен
+      isScriptLoaded && 
       selectedMarker &&
-      (selectedMarker.lat !== defaultLocation.lat ||
-        selectedMarker.lng !== defaultLocation.lng)
+      userLocation &&
+      (selectedMarker.lat !== userLocation.lat ||
+        selectedMarker.lng !== userLocation.lng)
     ) {
       setLoading(true);
 
       const directionsService = new google.maps.DirectionsService();
       directionsService.route(
         {
-          origin: defaultLocation,
+          origin: userLocation,
           destination: selectedMarker,
           travelMode: google.maps.TravelMode.DRIVING,
           drivingOptions: {
@@ -77,6 +102,13 @@ const MapPage = () => {
       );
     }
   }, [selectedMarker, isScriptLoaded]);
+
+  const centerOnUserLocation = () => {
+    if (userLocation && map) {
+      map.panTo(userLocation);
+      map.setZoom(16);
+    }
+  };
 
   const MySearchBox: React.FC = () => {
     const handleSearchPlaces = () => {
@@ -121,32 +153,67 @@ const MapPage = () => {
       onLoad={() => setIsScriptLoaded(true)}
     >
       {isScriptLoaded ? (
-        <GoogleMap
-          mapContainerStyle={{ width: "100%", height: "90vh" }}
-          center={selectedMarker || defaultLocation}
-          zoom={16}
-          onLoad={(mapInstance) => setMap(mapInstance)}
-        >
-          <MySearchBox />
-          {defaultLocation && <Marker position={defaultLocation} label="A" />}
-          {selectedMarker && <Marker position={selectedMarker} label="B" />}
-          {loading && <div>Загружается маршрут...</div>}
-          {routeStatus && <div>{routeStatus}</div>}
-          {directions && (
-            <DirectionsRenderer
-              directions={directions}
-              options={{
-                suppressMarkers: true,
-                preserveViewport: true,
-                polylineOptions: {
-                  strokeColor: "#FF0000",
-                  strokeWeight: 4,
-                  strokeOpacity: 0.7,
-                },
-              }}
-            />
+        <div className="relative">
+          <GoogleMap
+            mapContainerStyle={{ width: "100%", height: "90vh" }}
+            center={userLocation || defaultLocation}
+            zoom={16}
+            onLoad={(mapInstance) => setMap(mapInstance)}
+          >
+            <MySearchBox />
+            {selectedMarker && <Marker position={selectedMarker} label="B" />}
+            
+            {userLocation && (
+              <Marker
+                position={userLocation}
+                icon={{
+                  path: google.maps.SymbolPath.CIRCLE,
+                  scale: 8,
+                  fillColor: "#4285F4",
+                  fillOpacity: 1,
+                  strokeColor: "#FFFFFF",
+                  strokeWeight: 2,
+                }}
+                zIndex={1000}
+              />
+            )}
+            
+            {loading && <div>Загружается маршрут...</div>}
+            {routeStatus && <div>{routeStatus}</div>}
+            {directions && (
+              <DirectionsRenderer
+                directions={directions}
+                options={{
+                  suppressMarkers: true,
+                  preserveViewport: true,
+                  polylineOptions: {
+                    strokeColor: "#FF0000",
+                    strokeWeight: 4,
+                    strokeOpacity: 0.7,
+                  },
+                }}
+              />
+            )}
+          </GoogleMap>
+          
+          <button
+            onClick={centerOnUserLocation}
+            className="absolute bottom-36 right-2 bg-white p-3 rounded-full shadow-lg z-10"
+            title="Моё местоположение"
+            disabled={!userLocation}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+          
+          {locationError && (
+            <div className="absolute top-20 left-0 right-0 mx-auto text-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md">
+              {locationError}
+            </div>
           )}
-        </GoogleMap>
+        </div>
       ) : (
         <div>Загрузка карты...</div>
       )}
