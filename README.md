@@ -1,5 +1,6 @@
 # Shaar
 Перейти на сайт Shaar: https://shaar-tau.vercel.app/welcome
+Бэкэнд : https://github.com/daniarmakyev/ShaarBackCleanArch
 
 Веб-приложение, направленное на улучшение туристического опыта в Бишкеке с использованием современных технологий фронтенд-разработки и интеграции с Google Maps API.
 
